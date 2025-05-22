@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: marmitas-flask
+    env: docker
+    plan: free
+    branch: main
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        value: capoeira5
+      - key: DATABASE_URL
+        value: postgresql://avnadmin:AVNS_BcfQql_OZUE_EXMLhp9@marmitas-db-marmitas.h.aivencloud.com:15576/defaultdb?sslmode=require

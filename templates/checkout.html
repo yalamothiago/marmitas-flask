@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Finalizar Pedido</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function toggleTroco() {
+            const pagamento = document.querySelector('input[name="pagamento"]:checked');
+            const trocoDiv = document.getElementById('troco-div');
+            trocoDiv.style.display = pagamento && pagamento.value === 'Dinheiro' ? 'block' : 'none';
+        }
+
+        window.onload = toggleTroco;
+    </script>
+</head>
+<body>
+    <h1>Finalizar Pedido</h1>
+
+    <h2>Resumo do Pedido</h2>
+    <ul>
+        {% for item in itens %}
+            <li>{{ item.marmita.nome }} - {{ item.quantidade }}x - R$ {{ item.subtotal|round(2) }}</li>
+        {% endfor %}
+    </ul>
+    <strong>Total: R$ {{ total|round(2) }}</strong>
+    
+
+    <hr>
+
+    <form method="POST">
+        <label>Forma de pagamento:</label><br>
+        <label><input type="radio" name="pagamento" value="Cartão" onclick="toggleTroco()" required> Cartão</label><br>
+        <label><input type="radio" name="pagamento" value="Pix" onclick="toggleTroco()"> Pix</label><br>
+        <label><input type="radio" name="pagamento" value="Dinheiro" onclick="toggleTroco()"> Dinheiro</label><br><br>
+
+        <div id="troco-div" style="display: none;">
+            <label>Troco para quanto?</label>
+            <input type="text" name="troco"><br><br>
+        </div>
+
+        <label>Endereço para entrega:</label><br>
+        <input type="text" name="endereco" value="{{ endereco }}" required><br><br>
+
+        <button type="submit">Confirmar Pedido</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('index') }}" class="btn-voltar">← Voltar ao Cardápio</a>
+</body>
+</html>

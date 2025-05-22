@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF=8">
+    <title>Carrinho</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('ver_carrinho') }}" class="carrinho-link">Carrinho ({{ carrinho|length }})</a>
+    </header>
+
+    <h1>Seu Carrinho</h1>
+    <ul>
+        {% for item in itens %}
+            <li>
+                {{ item.marmita.nome }} - R$ {{ item.marmita.preco }} x {{ item.quantidade }}
+                <div class="quantidade-controle">
+                    <button onclick="diminuirItem({{ item.marmita.id }})" class="btn-quant">-</button>
+                    {{ item.quantidade }}
+                    <button onclick="aumentarItem({{ item.marmita.id }})" class="btn-quant">+</button>
+
+                  </div>                  
+
+            </li>
+        {% endfor %}
+    </ul>
+    <p>Total: R$ {{ total }}</p>
+    <a href="{{ url_for('checkout') }}">Finalizar Compra</a>
+    <a href="{{ url_for('index') }}" class="btn-voltar">Cardápio</a>
+
+    <script>
+        function aumentarItem(id) {
+            fetch(`/aumentar/${id}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.mensagem); });
+                }
+                return response.json();
+            })
+            .then(() => location.reload())
+            .catch(error => alert(error.message));
+        }
+        
+        function diminuirItem(id) {
+            fetch(`/diminuir/${id}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.mensagem); });
+                }
+                return response.json();
+            })
+            .then(() => location.reload())
+            .catch(error => alert(error.message));
+        }
+        </script>        
+</body>
+</html>

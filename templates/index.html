@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Loja de Marmitas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="user-info">
+            {% if usuario_logado %}
+                <span>{{ usuario_logado.nome }}</span>
+            {% endif %}
+        </div>
+    
+        <div class="header-actions">
+            <a href="{{ url_for('ver_carrinho') }}" class="carrinho-link">Carrinho ({{ carrinho|length }})</a>
+    
+            {% if usuario_logado and usuario_logado.administrador %}
+                <a href="{{ url_for('painel_admin') }}"><button>Painel Admin</button></a>
+            {% endif %}
+    
+            {% if usuario_logado %}
+                <a href="{{ url_for('logout') }}" class="carrinho-link">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}"><button>Login</button></a>
+            {% endif %}
+        </div>
+    </header>
+    
+
+    <h1>Bem-vindo à Loja de Marmitas</h1>
+
+    <ul>
+        {% for marmita in marmitas %}
+            <li>
+                <strong>{{ marmita.nome }}</strong> - 
+                R$ {{ "%.2f"|format(marmita.preco) }}<br>
+    
+                {% if marmita.descricao %}
+                    <em>{{ marmita.descricao }}</em><br>
+                {% endif %}
+    
+                <a href="{{ url_for('adicionar', id=marmita.id) }}">[Adicionar ao carrinho]</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        // Checa se há parâmetro ?erro= na URL e mostra um alerta
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('erro')) {
+            alert(params.get('erro'));
+            // Remove o parâmetro da URL sem recarregar a página
+            history.replaceState(null, '', window.location.pathname);
+        }
+    </script>
+    
+</body>
+</html>
