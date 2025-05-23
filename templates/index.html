@@ -6,45 +6,58 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {# Aqui a mensagem de feedback será exibida #}
+    {% if mensagem %}
+        <div class="mensagem-sucesso" id="mensagemFeedback"> {# Adicionamos um ID para o JavaScript #}
+            <p>{{ mensagem }}</p>
+            <button class="close-btn">&times;</button> {# Botão de fechar com o caractere "X" #}
+        </div>
+    {% endif %}
+
     <header>
-        <div class="user-info">
+        <div class="header-left">
+            {# Este espaço pode ser para o logo ou link principal se houver #}
+            {# Ou, como no caso, pode ser deixado vazio para que o centro se expanda mais #}
+        </div>
+        <div class="header-center">
+            {# Assumindo que você tem uma variável 'usuario_logado' com o nome #}
             {% if usuario_logado %}
-                <span>{{ usuario_logado.nome }}</span>
+                <span class="user-name">Olá, {{ usuario_logado.nome }}!</span>
             {% endif %}
         </div>
-    
-        <div class="header-actions">
+        <div class="header-right">
             <a href="{{ url_for('ver_carrinho') }}" class="carrinho-link">Carrinho ({{ carrinho|length }})</a>
-    
+            
             {% if usuario_logado and usuario_logado.administrador %}
-                <a href="{{ url_for('painel_admin') }}"><button>Painel Admin</button></a>
+                <a href="{{ url_for('painel_admin') }}" class="btn">Painel Admin</a> {# Botão padronizado #}
             {% endif %}
-    
+            
             {% if usuario_logado %}
-                <a href="{{ url_for('logout') }}" class="carrinho-link">Logout</a>
+                <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a> {# Botão de logout padronizado #}
             {% else %}
-                <a href="{{ url_for('login') }}"><button>Login</button></a>
+                <a href="{{ url_for('login') }}" class="btn">Login</a> {# Botão de login padronizado #}
             {% endif %}
         </div>
     </header>
     
+    <div class="main-content"> {# Envolvemos o conteúdo principal para estilização #}
+        <h1>Bem-vindo à Loja de Marmitas</h1>
 
-    <h1>Bem-vindo à Loja de Marmitas</h1>
-
-    <ul>
-        {% for marmita in marmitas %}
-            <li>
-                <strong>{{ marmita.nome }}</strong> - 
-                R$ {{ "%.2f"|format(marmita.preco) }}<br>
-    
-                {% if marmita.descricao %}
-                    <em>{{ marmita.descricao }}</em><br>
-                {% endif %}
-    
-                <a href="{{ url_for('adicionar', id=marmita.id) }}">[Adicionar ao carrinho]</a>
-            </li>
-        {% endfor %}
-    </ul>
+        <ul>
+            {% for marmita in marmitas %}
+                <li class="marmita-item"> 
+                    <strong>{{ marmita.nome }}</strong> - 
+                    R$ {{ "%.2f"|format(marmita.preco) }}<br>
+            
+                    {% if marmita.descricao %}
+                        <p class="marmita-descricao">{{ marmita.descricao }}</p> 
+                    {% endif %}
+            
+                    <a href="{{ url_for('adicionar', id=marmita.id) }}" class="add-to-cart-btn">Adicionar ao carrinho</a> 
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
     <script>
         // Checa se há parâmetro ?erro= na URL e mostra um alerta
@@ -54,7 +67,25 @@
             // Remove o parâmetro da URL sem recarregar a página
             history.replaceState(null, '', window.location.pathname);
         }
+
+        // Script para o botão de fechar a mensagem de feedback
+        const mensagemFeedback = document.getElementById('mensagemFeedback');
+        if (mensagemFeedback) { // Garante que a mensagem existe antes de tentar manipulá-la
+            const closeButton = mensagemFeedback.querySelector('.close-btn');
+            if (closeButton) { // Garante que o botão de fechar existe
+                closeButton.addEventListener('click', function() {
+                    // Adiciona estilos para esconder a mensagem suavemente
+                    mensagemFeedback.style.opacity = '0';
+                    mensagemFeedback.style.height = '0';
+                    mensagemFeedback.style.padding = '0';
+                    mensagemFeedback.style.margin = '0';
+                    mensagemFeedback.style.border = 'none';
+                    mensagemFeedback.style.boxShadow = 'none';
+                    // Remove o elemento completamente do DOM após a transição
+                    setTimeout(() => mensagemFeedback.remove(), 600); // O tempo deve corresponder à duração da animação CSS
+                });
+            }
+        }
     </script>
-    
 </body>
 </html>

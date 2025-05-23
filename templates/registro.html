@@ -4,25 +4,93 @@
     <meta charset="UTF-8">
     <title>Registro de Usuário</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function buscarCEP() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            document.getElementById('estado').value = data.uf;
+                            document.getElementById('cidade').value = data.localidade;
+                            document.getElementById('bairro').value = data.bairro;
+                            document.getElementById('rua').value = data.logradouro;
+                        } else {
+                            alert("CEP não encontrado.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao buscar o CEP:", error);
+                        alert("Erro ao buscar o CEP. Tente novamente.");
+                    });
+            }
+        }
+
+        function formatarCEP(input) {
+            let value = input.value.replace(/\D/g, ''); // Apenas números
+
+            if (value.length > 5) {
+                value = value.slice(0, 5) + '-' + value.slice(5, 8);
+            } else {
+                value = value.slice(0, 5);
+            }
+
+            input.value = value;
+        }
+    </script>
 </head>
 <body>
-    <h1>Cadastro</h1>
-    <form method="POST">
-        <label for="nome">Nome:</label><br>
-        <input type="text" name="nome" required><br><br>
 
-        <label for="endereco">Endereço:</label><br>
-        <input type="text" name="endereco" required><br><br>
+    <div class="form-page-container"> {# Novo container para páginas de formulário #}
+        <h1>Cadastro</h1>
 
-        <label for="email">Email:</label><br>
-        <input type="email" name="email" required><br><br>
+        <form method="POST">
+            <div class="form-container">
 
-        <label for="senha">Senha:</label><br>
-        <input type="password" name="senha" required><br><br>
+                <div class="form-section">
+                    <h2>Dados Pessoais</h2>
 
-        <button type="submit">Registrar</button>
-    </form>
+                    <label for="nome">Nome:</label>
+                    <input type="text" name="nome" placeholder="Digite seu nome completo" required>
 
-    <p>Já tem uma conta? <a href="{{ url_for('login') }}">Faça login</a></p>
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" placeholder="exemplo@dominio.com" required>
+
+                    <label for="senha">Senha:</label>
+                    <input type="password" name="senha" placeholder="Digite sua senha" required>
+                </div>
+
+                <div class="form-section">
+                    <h2>Endereço</h2>
+
+                    <label for="cep">CEP (opcional):</label>
+                    <input type="text" name="cep" id="cep" maxlength="9" placeholder="Ex: 12345-678" onblur="buscarCEP()" oninput="formatarCEP(this)">
+
+                    <label for="estado">Estado:</label>
+                    <input type="text" name="estado" id="estado" placeholder="Ex: RN" required>
+
+                    <label for="cidade">Cidade:</label>
+                    <input type="text" name="cidade" id="cidade" placeholder="Ex: Mossoró" required>
+
+                    <label for="bairro">Bairro:</label>
+                    <input type="text" name="bairro" id="bairro" placeholder="Ex: Vingt Rosado" required>
+
+                    <label for="rua">Rua:</label>
+                    <input type="text" name="rua" id="rua" placeholder="Ex: Rua das Flores" required>
+
+                    <label for="numero">Número:</label>
+                    <input type="text" name="numero" placeholder="Ex: 123" required>
+
+                    <label for="complemento">Complemento:</label>
+                    <input type="text" name="complemento" placeholder="Ex: Apartamento, bloco, etc">
+                </div>
+            </div>
+
+            <button type="submit">Registrar</button>
+        </form>
+
+        <p>Já tem uma conta? <a href="{{ url_for('login') }}">Faça login</a></p>
+    </div>
 </body>
 </html>

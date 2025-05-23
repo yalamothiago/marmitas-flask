@@ -6,50 +6,67 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Painel do Administrador</h1>
+    <header>
+        <div class="header-left">
+            <a href="{{ url_for('index') }}" class="btn-voltar">Cardápio</a>
+        </div>
+        <div class="header-center">
+            {# Assumindo que você tem uma variável 'current_user' com o nome #}
+            {% if current_user and current_user.is_authenticated %}
+                <span class="user-name">Olá, {{ current_user.nome }}!</span>
+            {% endif %}
+        </div>
+        <div class="header-right">
+            <a href="{{ url_for('ver_carrinho') }}" class="carrinho-link">Carrinho</a>
+            {# Assumindo que você tem uma rota para logout #}
+            {% if current_user and current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+            {% endif %}
+        </div>
+    </header>
 
-    <h2>Adicionar Nova Marmita</h2>
-    <form method="POST">
-        <label>Nome:</label><br>
-        <input type="text" name="nome" required><br>
+    <div class="main-content"> {# Novo container para o conteúdo principal #}
+        <h1>Painel do Administrador</h1>
 
-        <label>Preço:</label><br>
-        <input type="number" step="0.01" name="preco" required><br>
+        <h2>Adicionar Nova Marmita</h2>
+        <form method="POST">
+            <label>Nome:</label><br>
+            <input type="text" name="nome" required><br>
 
-        <label>Quantidade:</label><br>
-        <input type="number" name="quantidade" min="0" required><br>
+            <label>Preço:</label><br>
+            <input type="number" step="0.01" name="preco" required><br>
 
-        <label>Descrição:</label><br>
-        <textarea name="descricao" rows="3" cols="30"></textarea><br><br>
+            <label>Quantidade:</label><br>
+            <input type="number" name="quantidade" min="0" required><br>
 
-        <button type="submit">Adicionar Marmita</button>
-    </form>
+            <label>Descrição:</label><br>
+            <textarea name="descricao" rows="3" cols="30"></textarea><br><br>
 
-    <h2>Lista de Marmitas</h2>
-    <ul>
-        {% for marmita in marmitas %}
-            <li>
-                <strong>{{ marmita.nome }}</strong> - 
-                R$ {{ "%.2f"|format(marmita.preco) }} - 
-                Estoque: {{ marmita.quantidade }}<br>
+            <button type="submit">Adicionar Marmita</button>
+        </form>
 
-                {% if marmita.descricao %}
-                    <em>{{ marmita.descricao }}</em><br>
-                {% endif %}
+        <h2>Lista de Marmitas</h2>
+        <ul>
+            {% for marmita in marmitas %}
+                <li class="marmita-item"> {# Adicionei a classe marmita-item para o estilo global #}
+                    <strong>{{ marmita.nome }}</strong> - 
+                    R$ {{ "%.2f"|format(marmita.preco) }} - 
+                    Estoque: {{ marmita.quantidade }}<br>
 
-                <!-- Formulário para adicionar ao estoque -->
-                <form method="POST" action="{{ url_for('atualizar_estoque', id=marmita.id) }}" style="margin-top: 5px;">
-                    <label for="quantidade_adicional">Adicionar ao estoque:</label>
-                    <input type="number" name="quantidade_adicional" min="1" required>
-                    <button type="submit">Atualizar</button>
-                </form>
+                    {% if marmita.descricao %}
+                        <em>{{ marmita.descricao }}</em><br>
+                    {% endif %}
 
-                <a href="{{ url_for('deletar_marmita', id=marmita.id) }}" onclick="return confirm('Deseja deletar esta marmita?')">[Deletar]</a>
-            </li>
-        {% endfor %}
-    </ul>
+                    <form method="POST" action="{{ url_for('atualizar_estoque', id=marmita.id) }}">
+                        <label for="quantidade_adicional">Adicionar ao estoque:</label>
+                        <input type="number" name="quantidade_adicional" min="1" required>
+                        <button type="submit">Atualizar</button>
+                    </form>
 
-    <a href="{{ url_for('logout') }}">Sair</a> |
-    <a href="{{ url_for('index') }}">Voltar ao Cardápio</a>
+                    <a href="{{ url_for('deletar_marmita', id=marmita.id) }}" onclick="return confirm('Deseja deletar esta marmita?')">Deletar</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div> {# Fecha main-content #}
 </body>
 </html>

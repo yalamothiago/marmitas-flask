@@ -1,33 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF=8">
+    <meta charset="UTF-8">
     <title>Carrinho</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
-        <a href="{{ url_for('ver_carrinho') }}" class="carrinho-link">Carrinho ({{ carrinho|length }})</a>
+        <div class="header-left">
+            {# Este botão vai para a esquerda #}
+            <a href="{{ url_for('index') }}" class="btn-voltar">Cardápio</a> 
+        </div>
+        <div class="header-center">
+            {# O nome do usuário estará aqui, se a variável for passada #}
+            {% if usuario_logado %}
+                <span class="user-name">Olá, {{ usuario_logado.nome }}!</span>
+            {% endif %}
+        </div>
+        <div class="header-right">
+            {# Carrinho e botão de Sair/Login à direita #}
+            <a href="{{ url_for('ver_carrinho') }}" class="carrinho-link">Carrinho ({{ carrinho|length }})</a>
+            {% if usuario_logado %}
+                <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+            {% endif %}
+        </div>
     </header>
 
-    <h1>Seu Carrinho</h1>
-    <ul>
-        {% for item in itens %}
-            <li>
-                {{ item.marmita.nome }} - R$ {{ item.marmita.preco }} x {{ item.quantidade }}
-                <div class="quantidade-controle">
-                    <button onclick="diminuirItem({{ item.marmita.id }})" class="btn-quant">-</button>
-                    {{ item.quantidade }}
-                    <button onclick="aumentarItem({{ item.marmita.id }})" class="btn-quant">+</button>
+    <div class="cart-container">
+        <h1>Seu Carrinho</h1>
 
-                  </div>                  
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
 
-            </li>
-        {% endfor %}
-    </ul>
-    <p>Total: R$ {{ total }}</p>
-    <a href="{{ url_for('checkout') }}">Finalizar Compra</a>
-    <a href="{{ url_for('index') }}" class="btn-voltar">Cardápio</a>
+        {% if itens %}
+            <ul class="cart-items-list">
+                {% for item in itens %}
+                    <li class="cart-item">
+                        <div class="item-main-info"> 
+                            <span class="item-name">{{ item.marmita.nome }}</span>
+                            <span class="item-price">R$ {{ "%.2f"|format(item.marmita.preco) }}</span>
+                        </div>
+                        <div class="item-quantity-control">
+                            <button onclick="diminuirItem({{ item.marmita.id }})" class="btn-quant">-</button>
+                            <span class="current-quantity">{{ item.quantidade }}</span>
+                            <button onclick="aumentarItem({{ item.marmita.id }})" class="btn-quant">+</button>
+                            
+                            {# NOVO: Botão para remover o item completo #}
+                            <button onclick="removerItemCompleto({{ item.marmita.id }})" class="btn-quant btn-danger">Excluir</button>
+                        </div>
+                        <div class="item-subtotal">
+                            R$ {{ "%.2f"|format(item.subtotal) }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="cart-summary">
+                <p class="cart-total">Total: **R$ {{ "%.2f"|format(total) }}**</p>
+                <a href="{{ url_for('checkout') }}" class="btn-finalizar">Finalizar Compra</a>
+            </div>
+        {% else %}
+            <p class="cart-empty-message">Seu carrinho está vazio. Adicione algumas marmitas!</p>
+            <a href="{{ url_for('index') }}" class="btn-finalizar">Ir para o Cardápio</a> 
+        {% endif %}
+    </div>
 
     <script>
         function aumentarItem(id) {
@@ -57,6 +102,23 @@
             .then(() => location.reload())
             .catch(error => alert(error.message));
         }
-        </script>        
+
+        // NOVA FUNÇÃO: Remover item completo
+        function removerItemCompleto(id) {
+            if (confirm('Tem certeza que deseja remover todos os itens deste produto do carrinho?')) {
+                fetch(`/remover_item_completo/${id}`, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => { throw new Error(data.mensagem); });
+                    }
+                    return response.json();
+                })
+                .then(() => location.reload())
+                .catch(error => alert(error.message));
+            }
+        }
+    </script>
 </body>
 </html>

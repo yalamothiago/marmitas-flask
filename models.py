@@ -8,8 +8,16 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    senha_hash = db.Column(db.String(db.Text), nullable=False)
-    endereco = db.Column(db.String(200), nullable=True)
+    senha_hash = db.Column(db.Text, nullable=False)
+
+    cep = db.Column(db.String(10))
+    estado = db.Column(db.String(2))
+    cidade = db.Column(db.String(100))
+    bairro = db.Column(db.String(100))
+    rua = db.Column(db.String(100))
+    numero = db.Column(db.String(20))
+    complemento = db.Column(db.String(100))
+
     administrador = db.Column(db.Boolean, default=False)
 
     vendas = db.relationship('Venda', backref='usuario', lazy=True)
@@ -19,6 +27,16 @@ class Usuario(db.Model):
 
     def verificar_senha(self, senha):
         return check_password_hash(self.senha_hash, senha)
+
+    def endereco_completo(self):
+        partes = [
+            f"{self.rua}, {self.numero}" if self.rua and self.numero else "",
+            f"{self.bairro}" if self.bairro else "",
+            f"{self.cidade} - {self.estado}" if self.cidade and self.estado else "",
+            f"CEP: {self.cep}" if self.cep else "",
+            f"Complemento: {self.complemento}" if self.complemento else ""
+        ]
+        return ', '.join([p for p in partes if p])
 
 
 class Ingrediente(db.Model):
@@ -53,6 +71,10 @@ class Venda(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     total = db.Column(db.Float, nullable=False)
 
+    endereco_entrega = db.Column(db.String(255), nullable=False) # Ou Text se for muito longo
+    forma_pagamento = db.Column(db.String(50), nullable=False)
+    troco_para = db.Column(db.Float, nullable=True) # Pode ser nulo se não precisar de troco
+
     itens = db.relationship('VendaItem', backref='venda', lazy=True)
 
 
@@ -61,5 +83,6 @@ class VendaItem(db.Model):
     venda_id = db.Column(db.Integer, db.ForeignKey('venda.id'), nullable=False)
     marmita_id = db.Column(db.Integer, db.ForeignKey('marmita.id', ondelete='CASCADE'), nullable=False)
     quantidade = db.Column(db.Integer, nullable=False)
+    preco_unitario = db.Column(db.Float, nullable=False)
 
     marmita = db.relationship('Marmita', back_populates='venda_itens')
