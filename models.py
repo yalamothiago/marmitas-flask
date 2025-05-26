@@ -82,7 +82,7 @@ class Marmita(db.Model):
     condimento_itens = db.relationship('MarmitaCondimento', back_populates='marmita', cascade='all, delete-orphan', lazy=True)
 
     venda_itens = db.relationship('VendaItem', back_populates='marmita', cascade='all, delete-orphan', lazy=True)
-    producoes = db.relationship('ProducaoMarmita', back_populates='marmita', lazy=True)
+    producoes = db.relationship('ProducaoMarmita', back_populates='marmita', lazy=True, cascade='all, delete-orphan')
 
     carrinho_itens = db.relationship('CarrinhoItem', back_populates='marmita', cascade='all, delete-orphan', lazy=True)
 

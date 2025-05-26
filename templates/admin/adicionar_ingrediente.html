@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Adicionar Ingrediente{% endblock %}
+
+{% block content %}
+    <h1>Adicionar Novo Ingrediente</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div>
+            {{ form.nome.label }}<br>
+            {{ form.nome(class="form-control") }}
+            {% if form.nome.errors %}
+                <ul class="errors">{% for error in form.nome.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.quantidade_comprada.label }}<br>
+            {{ form.quantidade_comprada(class="form-control") }}
+            {% if form.quantidade_comprada.errors %}
+                <ul class="errors">{% for error in form.quantidade_comprada.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.unidade_medida.label }}<br>
+            {{ form.unidade_medida(class="form-control") }}
+            {% if form.unidade_medida.errors %}
+                <ul class="errors">{% for error in form.unidade_medida.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.total_pago.label }}<br>
+            {{ form.total_pago(class="form-control") }}
+            {% if form.total_pago.errors %}
+                <ul class="errors">{% for error in form.total_pago.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <br>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+    <p><a href="{{ url_for('admin.gerenciar_ingredientes') }}">Voltar para Gerenciar Ingredientes</a></p>
+{% endblock %}

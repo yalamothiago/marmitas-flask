@@ -5,41 +5,74 @@
 {% block content %}
     <h1>Painel do Administrador</h1>
 
-    <h2>Adicionar Nova Marmita</h2>
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label>Nome:</label><br>
-        <input type="text" name="nome" required><br>
-        <label>Preço:</label><br>
-        <input type="number" step="0.01" name="preco" required><br>
-        <label>Quantidade:</label><br>
-        <input type="number" name="quantidade" min="0" required><br>
-        <label>Descrição:</label><br>
-        <textarea name="descricao" rows="3" cols="30"></textarea><br><br>
-        <button type="submit">Adicionar Marmita</button>
-    </form>
+    <div class="admin-sections">
+        <section class="admin-section">
+            <h2>Gerenciar Marmitas</h2>
+            <p><a href="{{ url_for('admin.adicionar_marmita') }}" class="btn">Adicionar Nova Marmita</a></p>
+            <h3>Lista de Marmitas Ativas:</h3>
+            <ul>
+                {% for marmita in marmitas %}
+                    <li class="marmita-item">
+                        <strong>{{ marmita.nome }}</strong> - 
+                        R$ {{ "%.2f"|format(marmita.preco) }} - 
+                        Estoque: {{ marmita.quantidade }} <br>
+                        Custo Base: R$ {{ "%.2f"|format(marmita.custo_producao_base) if marmita.custo_producao_base is not none else 'N/A' }} <br>
+                        Margem: {{ "%.2f"|format(marmita.margem_lucro_percentual) if marmita.margem_lucro_percentual is not none else 'N/A' }}%
+                        
+                        {# Formulário de Produção (Atualizar Estoque) #}
+                        <form method="POST" action="{{ url_for('admin.atualizar_estoque', id=marmita.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label for="quantidade_adicional">Produzir mais:</label>
+                            <input type="number" name="quantidade_adicional" min="1" required>
+                            <button type="submit">Produzir</button>
+                        </form>
+                        
+                        {# Links para gerenciar condimentos da marmita (funcionalidade futura) #}
+                        {# <a href="{{ url_for('admin.gerenciar_condimentos_marmita', marmita_id=marmita.id) }}">Gerenciar Condimentos</a> #}
 
-    <h2>Lista de Marmitas</h2>
-    <ul>
-        {% for marmita in marmitas %}
-            <li class="marmita-item">
-                <strong>{{ marmita.nome }}</strong> - 
-                R$ {{ "%.2f"|format(marmita.preco) }} - 
-                Estoque: {{ marmita.quantidade }}<br>
+                        <a href="{{ url_for('admin.deletar_marmita', id=marmita.id) }}" onclick="return confirm('Deseja deletar esta marmita?')">Deletar</a>
+                    </li>
+                {% else %}
+                    <li>Nenhuma marmita cadastrada.</li>
+                {% endfor %}
+            </ul>
+        </section>
 
-                {% if marmita.descricao %}
-                    <em>{{ marmita.descricao }}</em><br>
-                {% endif %}
+        <section class="admin-section">
+            <h2>Gerenciar Ingredientes</h2>
+            <p><a href="{{ url_for('admin.adicionar_ingrediente') }}" class="btn">Adicionar Novo Ingrediente</a></p>
+            <h3>Lista de Ingredientes:</h3>
+            <ul>
+                {% for ingrediente in ingredientes %}
+                    <li>
+                        <strong>{{ ingrediente.nome }}</strong> - 
+                        Estoque: {{ ingrediente.quantidade }} {{ ingrediente.unidade_medida }} - 
+                        Custo Unit.: R$ {{ "%.4f"|format(ingrediente.custo_por_unidade) if ingrediente.custo_por_unidade is not none else 'N/A' }}
+                        {# Links para atualizar/deletar ingrediente (funcionalidade futura) #}
+                    </li>
+                {% else %}
+                    <li>Nenhum ingrediente cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </section>
 
-                <form method="POST" action="{{ url_for('admin.atualizar_estoque', id=marmita.id) }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <label for="quantidade_adicional">Adicionar ao estoque:</label>
-                    <input type="number" name="quantidade_adicional" min="1" required>
-                    <button type="submit">Atualizar</button>
-                </form>
-
-                <a href="{{ url_for('admin.deletar_marmita', id=marmita.id) }}" onclick="return confirm('Deseja deletar esta marmita?')">Deletar</a>
-            </li>
-        {% endfor %}
-    </ul>
+        <section class="admin-section">
+            <h2>Gerenciar Condimentos</h2>
+            <p><a href="{{ url_for('admin.adicionar_condimento') }}" class="btn">Adicionar Novo Condimento</a></p>
+            <h3>Lista de Condimentos:</h3>
+            <ul>
+                {% for condimento in condimentos %}
+                    <li>
+                        <strong>{{ condimento.nome }}</strong> - 
+                        Rendimento: {{ condimento.rendimento }} {{ condimento.unidade_medida }} - 
+                        Custo Unit.: R$ {{ "%.4f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}
+                        <a href="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}">Gerenciar Ingredientes</a>
+                        {# Links para atualizar/deletar condimento (funcionalidade futura) #}
+                    </li>
+                {% else %}
+                    <li>Nenhum condimento cadastrado.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
 {% endblock %}

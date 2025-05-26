@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Adicionar Condimento{% endblock %}
+
+{% block content %}
+    <h1>Adicionar Novo Condimento</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div>
+            {{ form.nome.label }}<br>
+            {{ form.nome(class="form-control") }}
+            {% if form.nome.errors %}
+                <ul class="errors">{% for error in form.nome.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.rendimento.label }}<br>
+            {{ form.rendimento(class="form-control") }}
+            {% if form.rendimento.errors %}
+                <ul class="errors">{% for error in form.rendimento.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.unidade_medida_rendimento.label }}<br>
+            {{ form.unidade_medida_rendimento(class="form-control") }}
+            {% if form.unidade_medida_rendimento.errors %}
+                <ul class="errors">{% for error in form.unidade_medida_rendimento.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <br>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+    <p><a href="{{ url_for('admin.gerenciar_condimentos') }}">Voltar para Gerenciar Condimentos</a></p>
+{% endblock %}

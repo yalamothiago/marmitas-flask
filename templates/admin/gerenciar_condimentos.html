@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciar Condimentos{% endblock %}
+
+{% block content %}
+    <h1>Gerenciar Condimentos</h1>
+    <p><a href="{{ url_for('admin.adicionar_condimento') }}" class="btn">Adicionar Novo Condimento</a></p>
+
+    {% if condimentos %}
+        <ul class="data-list">
+            {% for condimento in condimentos %}
+                <li>
+                    <strong>{{ condimento.nome }}</strong>: 
+                    Rendimento: {{ condimento.rendimento }} {{ condimento.unidade_medida }} | 
+                    Custo Unitário: R$ {{ "%.4f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}
+                    <br>
+                    <a href="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}">Gerenciar Ingredientes</a>
+                    {# Futuramente: Botões para editar/deletar #}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum condimento cadastrado ainda.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('admin.painel_admin') }}">Voltar ao Painel Admin</a></p>
+{% endblock %}

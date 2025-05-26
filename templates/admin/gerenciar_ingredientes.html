@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciar Ingredientes{% endblock %}
+
+{% block content %}
+    <h1>Gerenciar Ingredientes</h1>
+    <p><a href="{{ url_for('admin.adicionar_ingrediente') }}" class="btn">Adicionar Novo Ingrediente</a></p>
+
+    {% if ingredientes %}
+        <ul class="data-list">
+            {% for ingrediente in ingredientes %}
+                <li>
+                    <strong>{{ ingrediente.nome }}</strong>: 
+                    Estoque: {{ ingrediente.quantidade }} {{ ingrediente.unidade_medida }} | 
+                    Total Pago: R$ {{ "%.2f"|format(ingrediente.total_pago) if ingrediente.total_pago is not none else 'N/A' }} | 
+                    Custo Unitário: R$ {{ "%.4f"|format(ingrediente.custo_por_unidade) if ingrediente.custo_por_unidade is not none else 'N/A' }}
+                    {# Futuramente: Botões para editar/deletar #}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum ingrediente cadastrado ainda.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('admin.painel_admin') }}">Voltar ao Painel Admin</a></p>
+{% endblock %}

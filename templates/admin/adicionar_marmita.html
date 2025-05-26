@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Adicionar Marmita{% endblock %}
+
+{% block content %}
+    <h1>Adicionar Nova Marmita</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div>
+            {{ form.nome.label }}<br>
+            {{ form.nome(class="form-control") }}
+            {% if form.nome.errors %}
+                <ul class="errors">{% for error in form.nome.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.preco.label }}<br>
+            {{ form.preco(class="form-control") }}
+            {% if form.preco.errors %}
+                <ul class="errors">{% for error in form.preco.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.descricao.label }}<br>
+            {{ form.descricao(class="form-control") }}
+            {% if form.descricao.errors %}
+                <ul class="errors">{% for error in form.descricao.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.unidade_medida.label }}<br>
+            {{ form.unidade_medida(class="form-control") }}
+            {% if form.unidade_medida.errors %}
+                <ul class="errors">{% for error in form.unidade_medida.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.margem_lucro_percentual.label }}<br>
+            {{ form.margem_lucro_percentual(class="form-control") }}
+            {% if form.margem_lucro_percentual.errors %}
+                <ul class="errors">{% for error in form.margem_lucro_percentual.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <br>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+    <p><a href="{{ url_for('admin.painel_admin') }}">Voltar ao Painel Admin</a></p>
+{% endblock %}
