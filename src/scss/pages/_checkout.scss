@@ -1,0 +1,46 @@
+// src/scss/pages/_checkout.scss
+
+/* --- ESTILOS ESPECÍFICOS PARA A PÁGINA DE CHECKOUT --- */
+
+.checkout-items-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.checkout-items-list li {
+    background-color: #fdfdfd;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.checkout-items-list strong {
+    color: #2c3e50;
+}
+
+.checkout-total {
+    display: block;
+    text-align: right;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #27ae60;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .checkout-items-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    .checkout-items-list li strong {
+        margin-left: auto;
+    }
+}

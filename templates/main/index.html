@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Loja de Marmitas{% endblock %}
+
+{% block content %}
+    <h1>Bem-vindo à Loja de Marmitas</h1>
+
+    {% if marmitas %}
+        <ul class="marmitas-list">
+            {% for marmita in marmitas %}
+                <li class="marmita-item"> 
+                    <div class="marmita-info">
+                        <strong>{{ marmita.nome }}</strong> - 
+                        R$ {{ "%.2f"|format(marmita.preco) }}<br>
+                        {% if marmita.descricao %}
+                            <p class="marmita-descricao">{{ marmita.descricao }}</p> 
+                        {% endif %}
+                        <p class="marmita-estoque">Estoque: {{ marmita.quantidade }}</p>
+                    </div>
+                    
+                    <form action="{{ url_for('carrinho.adicionar', marmita_id=marmita.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> {# Certifique-se que o token CSRF está aqui se for um formulário POST #}
+                        <button type="submit" class="add-to-cart-btn"
+                            {% if marmita.quantidade == 0 %}disabled{% endif %}>
+                            {% if marmita.quantidade == 0 %}Esgotado{% else %}Adicionar ao carrinho{% endif %}
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhuma marmita disponível no momento.</p>
+    {% endif %}
+{% endblock %}

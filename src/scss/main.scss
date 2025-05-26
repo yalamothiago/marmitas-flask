@@ -1,0 +1,31 @@
+// src/scss/main.scss
+
+// 1. Variáveis e Mixins (se você tiver)
+@import '_variables'; // Crie este arquivo se tiver variáveis
+@import '_mixins';   // Crie este arquivo se tiver mixins
+
+// 2. Base (resets, tipografia global, animações gerais)
+@import '_base';
+
+// 3. Layout (estrutura principal)
+@import '_layout';
+
+// 4. Títulos Globais
+@import '_global_titles';
+
+// 5. Componentes
+@import 'components/_buttons';
+@import 'components/_forms';
+@import 'components/_marmita_items';
+@import 'components/_header_elements';
+@import 'components/_flash_messages';
+
+// 6. Páginas (estilos específicos por página)
+@import 'pages/_cart';
+@import 'pages/_checkout';
+@import 'pages/_admin';
+@import 'pages/_auth';
+
+// 7. Utilitários e Miscelâneas
+//@import '_miscellaneous'; // Ou o nome que preferir para "resto"
+@import '_utilities';     // Se você criar classes utilitárias como .mt-10, .text-center, etc.

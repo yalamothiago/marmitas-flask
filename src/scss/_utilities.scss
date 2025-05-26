@@ -1,0 +1,25 @@
+// src/scss/_miscellaneous.scss (ou _utilities.scss se for mais genérico)
+
+/* Alinha links ou botões ao centro */
+.text-center-link {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.endereco-box {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-top: 8px;
+    line-height: 1.6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    color: #34495e;
+}
+
+.endereco-box p {
+    margin: 0;
+    white-space: pre-wrap;
+    text-align: left;
+}

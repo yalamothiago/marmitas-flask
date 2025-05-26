@@ -1,0 +1,22 @@
+// src/scss/_global_titles.scss
+
+/* Títulos globais */
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 100px;
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: #34495e;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 24px;
+        margin-top: 40px; /* Ajusta margem superior do h1 após o header */
+    }
+}

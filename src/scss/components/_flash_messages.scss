@@ -1,0 +1,78 @@
+// src/scss/components/_flash_messages.scss
+
+/* --- Mensagens de Sucesso e Erro --- */
+.mensagem-feedback, /* Classe adicionada ao _flash_messages.html */
+.mensagem-sucesso,
+.mensagem-erro {
+    padding: 15px 25px;
+    margin: 25px auto;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-align: center;
+    max-width: 700px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInSlideDown 0.6s ease-out forwards;
+    transition: opacity 0.6s ease, height 0.6s ease, padding 0.6s ease, margin 0.6s ease;
+}
+
+/* Estilos específicos para mensagem de sucesso */
+.mensagem-sucesso, .success { /* Adicionada classe 'success' caso o category seja 'success' */
+    background-color: #e6ffed;
+    color: #0f5132;
+    border: 1px solid #b2d7c5;
+}
+
+/* Estilo para mensagens de erro */
+.mensagem-erro, .error { /* Adicionada classe 'error' caso o category seja 'error' */
+    background-color: #fcebeb;
+    color: #842029;
+    border: 1px solid #e0b0b8;
+}
+
+/* Animação para a mensagem aparecer */
+@keyframes fadeInSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botão de fechar (X) */
+.mensagem-feedback .close-btn, /* Ajustado para a classe do seu HTML */
+.mensagem-sucesso .close-btn {
+    background: none;
+    border: none;
+    color: #0f5132;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    transition: color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mensagem-feedback .close-btn:hover,
+.mensagem-sucesso .close-btn:hover {
+    color: #0a3d24;
+}
+
+@media (max-width: 768px) {
+    .mensagem-sucesso,
+    .mensagem-erro {
+        padding: 12px;
+        margin: 15px auto;
+        font-size: 0.95em;
+    }
+}

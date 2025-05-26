@@ -1,0 +1,157 @@
+// src/scss/components/_buttons.scss
+
+/* Botões e links padrão (com classe .btn) */
+a.btn,
+button {
+    background-color: #27ae60;
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+a.btn:hover,
+button:hover {
+    background-color: #219150;
+    transform: scale(1.02);
+}
+
+.carrinho-link {
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.carrinho-link:hover {
+    background-color: #2980b9;
+    transform: scale(1.02);
+}
+
+.btn-logout {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    padding: 8px 14px;
+    box-shadow: none;
+}
+
+.btn-logout:hover {
+    background-color: #e74c3c;
+    color: white;
+    transform: scale(1.02);
+}
+
+.add-to-cart-btn {
+    background-color: #27ae60;
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #219150;
+    transform: scale(1.02);
+}
+
+/* Botões de navegação/voltar padrão */
+.btn-voltar {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-voltar:hover {
+    background-color: #5a6268;
+    transform: scale(1.02);
+}
+
+/* Botões de quantidade e exclusão no carrinho */
+.item-quantity-control .btn-quant {
+    background-color: #3498db;
+    color: white;
+    padding: 6px 12px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    min-width: 38px;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.item-quantity-control .btn-quant:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.btn-finalizar {
+    background-color: #27ae60;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    box-shadow: 0 4px 10px rgba(39,174,96,0.2);
+}
+
+.btn-finalizar:hover {
+    background-color: #219150;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(39,174,96,0.3);
+}
+
+/* Estilos específicos para botões em telas menores (do carrinho) */
+@media (max-width: 768px) {
+    .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.85em;
+        border-radius: 4px;
+        margin: 0 5px;
+    }
+
+    .btn-action {
+        background-color: #f39c12;
+    }
+
+    .btn-action:hover {
+        background-color: #e67e22;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+    .btn-finalizar {
+        width: 100%;
+        text-align: center;
+        padding: 12px 20px;
+        font-size: 1.1em;
+    }
+}

@@ -1,0 +1,82 @@
+// src/scss/_layout.scss
+
+/* Cabeçalho fixo */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 999;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Container principal para o conteúdo que não é formulário ou carrinho */
+.main-content {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Container para páginas que são primariamente um formulário (login/registro) */
+.form-page-container {
+    max-width: 500px;
+    margin: 100px auto 50px auto;
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Organização do formulário em colunas (registro) */
+.form-container {
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.form-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* --- Media Queries para Responsividade (Geral) --- */
+@media (max-width: 768px) {
+    body {
+        padding-top: 130px; /* Ajusta o padding para o header empilhado */
+    }
+
+    header {
+        flex-direction: column; /* Empilha os itens do header */
+        align-items: center; /* Centraliza os itens empilhados */
+        padding: 15px 10px; /* Ajusta padding do header */
+    }
+
+    .main-content {
+        padding: 15px;
+        margin: 20px auto;
+    }
+
+    /* Formulários de login/registro */
+    .form-page-container {
+        padding: 20px;
+        margin: 60px 15px 30px 15px; /* Ajusta margens */
+    }
+    .form-container {
+        flex-direction: column; /* Empilha as seções de formulário */
+        gap: 15px;
+    }
+    .form-section {
+        min-width: unset; /* Remove o min-width */
+    }
+}

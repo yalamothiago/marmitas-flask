@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="form-page-container">
+        <h1>Tela de Login</h1>
+
+        {# Mensagens flash agora são incluídas no base.html através do _flash_messages.html #}
+
+        <form method="POST">
+            {{ form.csrf_token }} {# Adiciona o token CSRF gerado pelo Flask-WTF #}
+
+            <label for="email">Email:</label>
+            {{ form.email(class="form-control") }}
+            {% if form.email.errors %}
+                <ul class="errors">
+                    {% for error in form.email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <label for="senha">Senha:</label>
+            {{ form.senha(class="form-control") }}
+            {% if form.senha.errors %}
+                <ul class="errors">
+                    {% for error in form.senha.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {{ form.submit(class="btn btn-primary") }} {# Renderiza o botão de submit #}
+        </form>
+        <p>Não tem uma conta? <a href="{{ url_for('auth.registro') }}">Cadastre-se aqui</a></p>
+    </div>
+{% endblock %}

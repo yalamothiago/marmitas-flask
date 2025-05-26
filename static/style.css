@@ -1,798 +1,788 @@
+@charset "UTF-8";
 /* Reset básico */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f2f4f8;
-    color: #333;
-    padding: 0 20px 60px; /* Padding inferior para rolagem e espaço */
-    line-height: 1.6;
-    animation: fadeIn 0.5s ease-in;
-    padding-top: 80px; /* Espaço para o cabeçalho fixo */
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f2f4f8;
+  color: #333;
+  padding: 0 20px 60px; /* Padding inferior para rolagem e espaço */
+  line-height: 1.6;
+  animation: fadeIn 0.5s ease-in;
+  padding-top: 80px; /* Espaço para o cabeçalho fixo */
 }
 
-/* Animação */
+/* Animação global */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
 /* Cabeçalho fixo */
 header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 15px 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center; /* Alinha os itens verticalmente no centro */
-    justify-content: space-between; /* Distribui o espaço entre os itens (left, center, right) */
-    z-index: 999;
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-    gap: 15px; /* Espaçamento entre as colunas do header */
-}
-
-/* Seções do Header */
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-shrink: 0; 
-    flex-basis: content; /* Deixa o tamanho inicial ser o do conteúdo */
-    min-width: 0; /* Permite que seja 0 se não tiver conteúdo */
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-shrink: 0; 
-    flex-basis: content; 
-}
-
-.header-center {
-    display: flex; 
-    align-items: center; 
-    /* Ajustado para alinhar à esquerda, a menos que haja 3 colunas e ele seja forçado a crescer */
-    justify-content: flex-start; 
-    flex-grow: 1; /* Permite que cresça para ocupar espaço */
-    flex-shrink: 1; /* Permite encolher */
-    flex-basis: auto; /* Deixa o tamanho inicial ser baseado no conteúdo, e não 0 */
-    min-width: 150px; 
-    text-align: left; /* Fallback para alinhamento de texto à esquerda */
-}
-
-.header-right {
-    justify-content: flex-end; /* Alinha o conteúdo à direita */
-}
-
-.user-name {
-    font-weight: bold;
-    color: #2c3e50;
-    font-size: 1.1em;
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    max-width: 100%; 
-}
-
-/* Botões e links padrão (com classe .btn) */
-a.btn,
-button { /* Aplica a botões e links com classe 'btn' */
-    background-color: #27ae60;
-    color: white;
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-a.btn:hover,
-button:hover {
-    background-color: #219150;
-    transform: scale(1.02);
-}
-
-.carrinho-link { /* Estilo específico para o link do carrinho */
-    background-color: #3498db; /* Cor azul para o carrinho */
-    color: white;
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.carrinho-link:hover {
-    background-color: #2980b9;
-    transform: scale(1.02);
-}
-
-.btn-logout {
-    background-color: transparent;
-    color: #e74c3c; /* Cor do texto vermelho */
-    border: 2px solid #e74c3c; /* Borda vermelha */
-    padding: 8px 14px; /* Ajuste o padding para ficar alinhado */
-    box-shadow: none; /* Sem sombra */
-}
-
-.btn-logout:hover {
-    background-color: #e74c3c; /* Fundo vermelho no hover */
-    color: white; /* Texto branco no hover */
-    transform: scale(1.02);
-}
-
-/* Títulos globais */
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 100px; /* Margem superior para o cabeçalho fixo */
-    margin-bottom: 30px;
-}
-
-h2 {
-    color: #34495e;
-    margin-top: 30px;
-    margin-bottom: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 15px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 999;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 /* Container principal para o conteúdo que não é formulário ou carrinho */
 .main-content {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
-
-/* Lista de marmitas (para a página principal/cardápio e admin) */
-ul {
-    list-style: none;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0;
-    display: grid;
-    gap: 15px;
-}
-
-/* Estilo para cada item da marmita */
-.marmita-item {
-    background: #fdfdfd; /* Levemente diferente do fundo do main-content */
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 120px;
-}
-
-.marmita-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.marmita-item strong {
-    display: block;
-    font-size: 18px;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.marmita-descricao {
-    color: #7f8c8d;
-    font-style: italic;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    flex-grow: 1; /* Permite que a descrição ocupe o espaço restante */
-}
-
-.add-to-cart-btn {
-    background-color: #27ae60;
-    color: white;
-    text-decoration: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    align-self: flex-start; /* Alinha o botão à esquerda dentro do item flex */
-    margin-top: auto; /* Empurra o botão para o final do espaço disponível */
-}
-
-.add-to-cart-btn:hover {
-    background-color: #219150;
-    transform: scale(1.02);
-}
-
 
 /* Container para páginas que são primariamente um formulário (login/registro) */
 .form-page-container {
-    max-width: 500px;
-    margin: 100px auto 50px auto; /* Mais margem superior para espaçamento */
-    background-color: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* Formulários */
-form {
-    margin-top: 20px; /* Adiciona margem após o h1/h2 */
-}
-
-label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600;
-    color: #555;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Sombra interna para profundidade */
-}
-
-/* Botões no formulário */
-form button {
-    margin-top: 20px;
-    width: 100%;
-    font-size: 16px;
-}
-
-/* Botões de navegação/voltar padrão */
-.btn-voltar {
-    background-color: #6c757d; /* Cor cinza para o botão de voltar */
-    color: white;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-voltar:hover {
-    background-color: #5a6268;
-    transform: scale(1.02);
-}
-
-/* Alinha links ou botões ao centro */
-.text-center-link {
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px; /* Espaço para o final da página */
-}
-
-/* Login e registro - parágrafos de link */
-.form-page-container p { /* Estilo para o parágrafo de login/registro */
-    text-align: center;
-    margin-top: 20px;
-}
-
-.form-page-container p a { /* Sobrescreve o estilo de botão para links de texto */
-    background: none;
-    color: #3498db;
-    padding: 0;
-    font-weight: normal; /* Remove negrito */
-    text-decoration: underline; /* Adiciona sublinhado */
-}
-
-.form-page-container p a:hover {
-    text-decoration: none; /* Remove sublinhado no hover */
-    transform: none; /* Remove transformação no hover */
-}
-
-/* Painel admin - Formulário de estoque */
-form[action*="atualizar_estoque"] {
-    margin-top: 10px;
-    background: #f8f8f8;
-    padding: 10px;
-    border-radius: 8px;
-    display: flex; /* Para alinhar input e botão */
-    align-items: center;
-    gap: 10px;
-    max-width: none; /* Remove o max-width do form padrão */
-    box-shadow: none; /* Remove a sombra do form padrão */
-}
-
-form[action*="atualizar_estoque"] label {
-    margin-top: 0; /* Remove margem superior da label */
-    margin-bottom: 0;
-    white-space: nowrap; /* Impede que a label quebre linha */
-}
-
-form[action*="atualizar_estoque"] input[type="number"] {
-    width: 80px;
-    flex-shrink: 0; /* Não permite que diminua */
-    margin-top: 0;
-}
-
-form[action*="atualizar_estoque"] button {
-    width: auto;
-    padding: 8px 14px;
-    font-size: 14px;
-    margin-top: 0;
-}
-
-/* Endereço Box */
-.endereco-box {
-    background-color: #f8f9fa;
-    border: 1px solid #ccc;
-    padding: 15px 20px;
-    border-radius: 10px;
-    margin-top: 8px;
-    line-height: 1.6;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    color: #34495e;
-}
-
-.endereco-box p {
-    margin: 0;
-    white-space: pre-wrap;
-    text-align: left; /* Garante que o texto dentro do box não seja centralizado */
+  max-width: 500px;
+  margin: 100px auto 50px auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Organização do formulário em colunas (registro) */
 .form-container {
-    display: flex;
-    gap: 40px;
-    justify-content: space-between;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .form-section {
-    flex: 1;
-    min-width: 300px; /* Garante que as colunas tenham um tamanho mínimo */
+  flex: 1;
+  min-width: 300px;
 }
 
-.form-section h2 {
+/* --- Media Queries para Responsividade (Geral) --- */
+@media (max-width: 768px) {
+  body {
+    padding-top: 130px; /* Ajusta o padding para o header empilhado */
+  }
+  header {
+    flex-direction: column; /* Empilha os itens do header */
+    align-items: center; /* Centraliza os itens empilhados */
+    padding: 15px 10px; /* Ajusta padding do header */
+  }
+  .main-content {
+    padding: 15px;
+    margin: 20px auto;
+  }
+  /* Formulários de login/registro */
+  .form-page-container {
+    padding: 20px;
+    margin: 60px 15px 30px 15px; /* Ajusta margens */
+  }
+  .form-container {
+    flex-direction: column; /* Empilha as seções de formulário */
+    gap: 15px;
+  }
+  .form-section {
+    min-width: unset; /* Remove o min-width */
+  }
+}
+/* Títulos globais */
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 100px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  color: #34495e;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+    margin-top: 40px; /* Ajusta margem superior do h1 após o header */
+  }
+}
+/* Botões e links padrão (com classe .btn) */
+a.btn,
+button {
+  background-color: #27ae60;
+  color: white;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+a.btn:hover,
+button:hover {
+  background-color: #219150;
+  transform: scale(1.02);
+}
+
+.carrinho-link {
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.carrinho-link:hover {
+  background-color: #2980b9;
+  transform: scale(1.02);
+}
+
+.btn-logout {
+  background-color: transparent;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+  padding: 8px 14px;
+  box-shadow: none;
+}
+
+.btn-logout:hover {
+  background-color: #e74c3c;
+  color: white;
+  transform: scale(1.02);
+}
+
+.add-to-cart-btn {
+  background-color: #27ae60;
+  color: white;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #219150;
+  transform: scale(1.02);
+}
+
+/* Botões de navegação/voltar padrão */
+.btn-voltar {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-voltar:hover {
+  background-color: #5a6268;
+  transform: scale(1.02);
+}
+
+/* Botões de quantidade e exclusão no carrinho */
+.item-quantity-control .btn-quant {
+  background-color: #3498db;
+  color: white;
+  padding: 6px 12px;
+  font-size: 1.1em;
+  border-radius: 5px;
+  min-width: 38px;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.item-quantity-control .btn-quant:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+.btn-finalizar {
+  background-color: #27ae60;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.3em;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2);
+}
+
+.btn-finalizar:hover {
+  background-color: #219150;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Estilos específicos para botões em telas menores (do carrinho) */
+@media (max-width: 768px) {
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    border-radius: 4px;
+    margin: 0 5px;
+  }
+  .btn-action {
+    background-color: #f39c12;
+  }
+  .btn-action:hover {
+    background-color: #e67e22;
+  }
+  .btn-danger {
+    background-color: #e74c3c;
+  }
+  .btn-danger:hover {
+    background-color: #c0392b;
+  }
+  .btn-finalizar {
+    width: 100%;
+    text-align: center;
+    padding: 12px 20px;
+    font-size: 1.1em;
+  }
+}
+/* Formulários */
+form {
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #555;
+}
+
+input[type=text],
+input[type=email],
+input[type=password],
+input[type=number],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Botões no formulário (geral) */
+form button {
+  margin-top: 20px;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* Lista de marmitas (para a página principal/cardápio e admin) */
+ul {
+  list-style: none;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  gap: 15px;
+}
+
+/* Estilo para cada item da marmita */
+.marmita-item {
+  background: #fdfdfd;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+}
+
+.marmita-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.marmita-item strong {
+  display: block;
+  font-size: 18px;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.marmita-descricao {
+  color: #7f8c8d;
+  font-style: italic;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+  ul {
+    padding: 0;
+  }
+}
+/* Seções do Header */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+  flex-basis: content;
+  min-width: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+  flex-basis: content;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  min-width: 150px;
+  text-align: left;
+}
+
+.header-right {
+  justify-content: flex-end;
+}
+
+.user-name {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .header-left,
+  .header-center,
+  .header-right {
+    width: 100%;
+    justify-content: center;
     margin-bottom: 10px;
-    color: #2c3e50;
+    text-align: center;
+    flex-shrink: 1;
+    flex-basis: auto;
+  }
+  .header-center {
+    order: 1;
+    margin-bottom: 15px;
+  }
+  .header-left {
+    order: 2;
+  }
+  .header-right {
+    order: 3;
+    margin-bottom: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .header-right > .carrinho-link,
+  .header-right > .btn-logout,
+  .header-right > .btn {
+    margin: 0;
+  }
+  .user-name {
+    margin-bottom: 0;
+  }
 }
-
 /* --- Mensagens de Sucesso e Erro --- */
+.mensagem-feedback,
 .mensagem-sucesso,
 .mensagem-erro {
-    padding: 15px 25px;
-    margin: 25px auto;
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: 600;
-    text-align: center;
-    max-width: 700px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    position: relative;
-    overflow: hidden;
-    animation: fadeInSlideDown 0.6s ease-out forwards;
-    transition: opacity 0.6s ease, height 0.6s ease, padding 0.6s ease, margin 0.6s ease; /* Transição para o fechamento */
+  padding: 15px 25px;
+  margin: 25px auto;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-align: center;
+  max-width: 700px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInSlideDown 0.6s ease-out forwards;
+  transition: opacity 0.6s ease, height 0.6s ease, padding 0.6s ease, margin 0.6s ease;
 }
 
 /* Estilos específicos para mensagem de sucesso */
-.mensagem-sucesso {
-    background-color: #e6ffed;
-    color: #0f5132;
-    border: 1px solid #b2d7c5;
+.mensagem-sucesso, .success { /* Adicionada classe 'success' caso o category seja 'success' */
+  background-color: #e6ffed;
+  color: #0f5132;
+  border: 1px solid #b2d7c5;
 }
 
-/* Opcional: Adicione um estilo para mensagens de erro, caso use no futuro */
-.mensagem-erro {
-    background-color: #fcebeb;
-    color: #842029;
-    border: 1px solid #e0b0b8;
+/* Estilo para mensagens de erro */
+.mensagem-erro, .error { /* Adicionada classe 'error' caso o category seja 'error' */
+  background-color: #fcebeb;
+  color: #842029;
+  border: 1px solid #e0b0b8;
 }
 
 /* Animação para a mensagem aparecer */
 @keyframes fadeInSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
 /* Botão de fechar (X) */
+.mensagem-feedback .close-btn,
 .mensagem-sucesso .close-btn {
-    background: none;
-    border: none;
-    color: #0f5132;
-    font-size: 1.5em;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0 5px;
-    line-height: 1;
-    transition: color 0.3s ease;
-    flex-shrink: 0; /* Impede que o botão diminua */
+  background: none;
+  border: none;
+  color: #0f5132;
+  font-size: 1.5em;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 5px;
+  line-height: 1;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
 }
 
+.mensagem-feedback .close-btn:hover,
 .mensagem-sucesso .close-btn:hover {
-    color: #0a3d24;
+  color: #0a3d24;
 }
 
+@media (max-width: 768px) {
+  .mensagem-sucesso,
+  .mensagem-erro {
+    padding: 12px;
+    margin: 15px auto;
+    font-size: 0.95em;
+  }
+}
 /* --- ESTILOS ESPECÍFICOS PARA A PÁGINA DO CARRINHO --- */
-
 .cart-container {
-    max-width: 900px;
-    margin: 100px auto 50px auto; /* Margem superior para o header fixo, centraliza */
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  max-width: 900px;
+  margin: 100px auto 50px auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .cart-container h1 {
-    text-align: center;
-    margin-top: 0; /* Remove a margem superior extra do h1 dentro do container */
-    margin-bottom: 25px;
-    color: #2c3e50;
-    font-size: 28px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #2c3e50;
+  font-size: 28px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
 }
 
 .cart-items-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid; /* Usa grid para organizar os itens */
-    gap: 15px; /* Espaçamento entre os itens */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 15px;
 }
 
 .cart-item {
-    background: #fdfdfd; /* Fundo levemente diferente para cada item */
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Sombra mais sutil */
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Espaço entre as seções */
-    font-size: 1em;
-    color: #333;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #fdfdfd;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1em;
+  color: #333;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cart-item .item-actions {
-    display: flex;
-    align-items: center;
-    gap: 5px; /* Espaçamento entre os botões */
+.cart-item .item-actions { /* Este seletor não existe no seu HTML atual, verificar se é necessário */
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .cart-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .item-main-info {
-    flex-basis: 40%; /* Ocupa uma boa parte do espaço para nome e preço */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  flex-basis: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .item-name {
-    font-weight: bold;
-    color: #2c3e50;
-    font-size: 1.2em;
-    margin-bottom: 5px;
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.2em;
+  margin-bottom: 5px;
 }
 
 .item-price {
-    font-size: 0.9em;
-    color: #7f8c8d;
+  font-size: 0.9em;
+  color: #7f8c8d;
 }
 
 .item-quantity-control {
-    flex-basis: 30%; /* Ocupa o meio para os controles */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Centraliza os botões e quantidade */
-    gap: 10px; /* Espaçamento entre os botões e o número */
-}
-
-.item-quantity-control .btn-quant {
-    background-color: #3498db; /* Azul para os botões de quantidade */
-    color: white;
-    padding: 6px 12px;
-    font-size: 1.1em;
-    border-radius: 5px;
-    min-width: 38px;
-    text-align: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.item-quantity-control .btn-quant:hover {
-    background-color: #2980b9; /* Azul mais escuro no hover */
-    transform: scale(1.05);
+  flex-basis: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .current-quantity {
-    font-weight: bold;
-    font-size: 1.3em;
-    color: #2c3e50;
-    min-width: 30px;
-    text-align: center;
+  font-weight: bold;
+  font-size: 1.3em;
+  color: #2c3e50;
+  min-width: 30px;
+  text-align: center;
 }
 
 .item-subtotal {
-    flex-basis: 20%; /* Ocupa o final para o subtotal */
-    font-weight: bold;
-    color: #27ae60;
-    font-size: 1.1em;
-    text-align: right;
+  flex-basis: 20%;
+  font-weight: bold;
+  color: #27ae60;
+  font-size: 1.1em;
+  text-align: right;
 }
 
 .cart-summary {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #27ae60;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #27ae60;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 15px;
 }
 
 .cart-total {
-    font-size: 1.8em; /* Total ainda maior */
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 10px;
-}
-
-.btn-finalizar {
-    background-color: #27ae60;
-    color: white;
-    padding: 15px 30px; /* Botão maior */
-    border-radius: 8px;
-    font-size: 1.3em; /* Texto maior no botão */
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    display: inline-block;
-    box-shadow: 0 4px 10px rgba(39,174,96,0.2); /* Sombra para destacar */
-}
-
-.btn-finalizar:hover {
-    background-color: #219150;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(39,174,96,0.3);
+  font-size: 1.8em;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10px;
 }
 
 .cart-empty-message {
-    text-align: center;
-    font-size: 1.3em;
-    color: #7f8c8d;
-    margin: 50px 0;
-    padding: 20px;
-    background-color: #f8f8f8;
-    border-radius: 8px;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+  text-align: center;
+  font-size: 1.3em;
+  color: #7f8c8d;
+  margin: 50px 0;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
+/* Media Queries para carrinho */
+@media (max-width: 768px) {
+  .cart-container {
+    padding: 15px;
+    margin: 80px 10px 30px 10px;
+  }
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+    gap: 6px;
+  }
+  .item-main-info,
+  .item-quantity-control,
+  .item-subtotal {
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+  }
+  .item-subtotal {
+    margin-top: 5px;
+  }
+}
 /* --- ESTILOS ESPECÍFICOS PARA A PÁGINA DE CHECKOUT --- */
-
 .checkout-items-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
 }
 
 .checkout-items-list li {
-    background-color: #fdfdfd;
-    padding: 10px 15px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  background-color: #fdfdfd;
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .checkout-items-list strong {
-    color: #2c3e50;
+  color: #2c3e50;
 }
 
 .checkout-total {
-    display: block;
-    text-align: right;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #27ae60;
-    margin-bottom: 20px;
+  display: block;
+  text-align: right;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #27ae60;
+  margin-bottom: 20px;
 }
-
-
-/* --- Media Queries para Responsividade --- */
 
 @media (max-width: 768px) {
-    body {
-        padding-top: 130px; /* Ajusta o padding para o header empilhado */
-    }
-
-    header {
-        flex-direction: column; /* Empilha os itens do header */
-        align-items: center; /* Centraliza os itens empilhados */
-        padding: 15px 10px; /* Ajusta padding do header */
-    }
-
-    .header-left,
-    .header-center,
-    .header-right {
-        width: 100%; /* Ocupa a largura total */
-        justify-content: center; /* Centraliza o conteúdo de cada seção */
-        margin-bottom: 10px; /* Espaço entre as seções empilhadas */
-        text-align: center; /* Garante que o texto esteja centralizado */
-        flex-shrink: 1; /* Permite que encolham em telas pequenas */
-        flex-basis: auto; /* Deixa o conteúdo determinar o tamanho inicial */
-    }
-
-    /* Ordem dos elementos no header em telas pequenas */
-    .header-center { order: 1; margin-bottom: 15px; } /* Nome do usuário primeiro */
-    .header-left { order: 2; } /* Cardápio */
-    .header-right { order: 3; margin-bottom: 0; flex-wrap: wrap; gap: 10px; } /* Carrinho e Sair */
-    
-    .header-right > .carrinho-link,
-    .header-right > .btn-logout,
-    .header-right > .btn {
-        margin: 0; /* Remove margens extras, o gap já deve cuidar disso */
-    }
-
-
-    .user-name {
-        margin-bottom: 0; /* Remove margem extra */
-    }
-
-    h1 {
-        font-size: 24px;
-        margin-top: 40px; /* Ajusta margem superior do h1 após o header */
-    }
-
-    .main-content {
-        padding: 15px;
-        margin: 20px auto;
-    }
-
-    ul {
-        padding: 0; /* Garante que a lista não tenha padding interno */
-    }
-
-    form {
-        padding: 15px; /* Reduz o padding do formulário */
-    }
-
-    /* Estilos específicos para o carrinho em telas menores */
-    .cart-container {
-        padding: 15px;
-        margin: 80px 10px 30px 10px; /* Ajusta margens e padding */
-    }
-
-    .cart-item {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 15px;
-        gap: 6px; /* Reduz um pouco o espaçamento */
-    }
-
-    .btn-sm {
-        padding: 6px 10px;
-        font-size: 0.85em;
-        border-radius: 4px;
-        margin: 0 5px; /* Espaçamento entre os botões */
-    }
-
-    .btn-action {
-        background-color: #f39c12; /* Laranja */
-    }
-
-    .btn-action:hover {
-        background-color: #e67e22; /* Laranja mais escuro */
-    }
-
-    .btn-danger {
-        background-color: #e74c3c; /* Vermelho */
-    }
-
-    .btn-danger:hover {
-        background-color: #c0392b; /* Vermelho mais escuro */
-    }
-
-    .inline-form {
-        display: inline-block;
-    }
-
-    .item-main-info,
-    .item-quantity-control,
-    .item-subtotal {
-        width: 100%;
-        text-align: left;
-        justify-content: flex-start;
-    }
-
-    .item-subtotal {
-        margin-top: 5px;
-    }
-
-    .btn-finalizar {
-        width: 100%;
-        text-align: center;
-        padding: 12px 20px;
-        font-size: 1.1em;
-    }
-
-    /* Mensagens de sucesso/erro em telas menores */
-    .mensagem-sucesso,
-    .mensagem-erro {
-        padding: 12px;
-        margin: 15px auto;
-        font-size: 0.95em;
-    }
-
-    /* Painel admin - Formulário de estoque em telas pequenas */
-    form[action*="atualizar_estoque"] {
-        flex-direction: column; /* Empilha os elementos */
-        align-items: flex-start;
-        gap: 5px;
-        padding: 8px;
-    }
-    form[action*="atualizar_estoque"] input[type="number"] {
-        width: 100%; /* Ocupa a largura total */
-    }
-    form[action*="atualizar_estoque"] button {
-        width: 100%; /* Ocupa a largura total */
-    }
-
-    /* Formulários de login/registro */
-    .form-page-container {
-        padding: 20px;
-        margin: 60px 15px 30px 15px; /* Ajusta margens */
-    }
-    .form-container {
-        flex-direction: column; /* Empilha as seções de formulário */
-        gap: 15px;
-    }
-    .form-section {
-        min-width: unset; /* Remove o min-width */
-    }
-
-    /* Checkout em telas menores */
-    .checkout-items-list li {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-    .checkout-items-list li strong {
-        margin-left: auto; /* Empurra o preço para a direita quando empilhado */
-    }
+  .checkout-items-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .checkout-items-list li strong {
+    margin-left: auto;
+  }
 }
+/* Painel admin - Formulário de estoque */
+form[action*=atualizar_estoque] {
+  margin-top: 10px;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: none;
+  box-shadow: none;
+}
+
+form[action*=atualizar_estoque] label {
+  margin-top: 0;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+form[action*=atualizar_estoque] input[type=number] {
+  width: 80px;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+form[action*=atualizar_estoque] button {
+  width: auto;
+  padding: 8px 14px;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  form[action*=atualizar_estoque] {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 8px;
+  }
+  form[action*=atualizar_estoque] input[type=number] {
+    width: 100%;
+  }
+  form[action*=atualizar_estoque] button {
+    width: 100%;
+  }
+}
+/* Login e registro - parágrafos de link */
+.form-page-container p {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.form-page-container p a {
+  background: none;
+  color: #3498db;
+  padding: 0;
+  font-weight: normal;
+  text-decoration: underline;
+}
+
+.form-page-container p a:hover {
+  text-decoration: none;
+  transform: none;
+}
+
+/* Alinha links ou botões ao centro */
+.text-center-link {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.endereco-box {
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-top: 8px;
+  line-height: 1.6;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  color: #34495e;
+}
+
+.endereco-box p {
+  margin: 0;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+/*# sourceMappingURL=style.css.map */

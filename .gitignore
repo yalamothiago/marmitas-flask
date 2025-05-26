@@ -1,0 +1,27 @@
+# Ignora arquivos de ambiente
+.env
+
+# Ignora o ambiente virtual do Python
+venv/
+
+# Ignora pastas de cache do Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Ignora arquivos de migração gerados (específicos do Alembic, por exemplo)
+# Você pode querer manter os arquivos de migração *gerados* (os .py com o hash),
+# mas não os arquivos de cache ou arquivos de configuração que podem ser recriados.
+# Se você gera migrações, talvez queira apenas ignorar o alembic.ini *local* se ele é recriado.
+# A linha abaixo vai ignorar todos os arquivos .ini, então use com cautela.
+# Se alembic.ini não é para ser versionado, ele deve ficar lá.
+alembic.ini
+
+# Ignora arquivos .map para CSS (gerados por sourcemaps)
+*.css.map
+
+# Ignora outros arquivos/pastas temporárias ou geradas que não devem ir para o Git
+# Ex: logs, arquivos de debug, etc.
+# Dependendo do seu projeto, você pode ter que adicionar mais coisas aqui
+# como diretórios de build, arquivos de banco de dados SQLite, etc.

@@ -1,0 +1,29 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="mensagem-feedback" id="mensagemFeedback">
+            {% for category, message in messages %}
+                <p class="{{ category }}">{{ message }}</p>
+            {% endfor %}
+            <button class="close-btn">&times;</button>
+        </div>
+        <script>
+            // Script para o botão de fechar a mensagem de feedback
+            // Este script pode ser movido para main.js se preferir.
+            const mensagemFeedback = document.getElementById('mensagemFeedback');
+            if (mensagemFeedback) {
+                const closeButton = mensagemFeedback.querySelector('.close-btn');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        mensagemFeedback.style.opacity = '0';
+                        mensagemFeedback.style.height = '0';
+                        mensagemFeedback.style.padding = '0';
+                        mensagemFeedback.style.margin = '0';
+                        mensagemFeedback.style.border = 'none';
+                        mensagemFeedback.style.boxShadow = 'none';
+                        setTimeout(() => mensagemFeedback.remove(), 600);
+                    });
+                }
+            }
+        </script>
+    {% endif %}
+{% endwith %}

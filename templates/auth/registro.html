@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro de Usuário{% endblock %}
+
+{% block content %}
+    <div class="form-page-container">
+        <h1>Cadastro</h1>
+
+        {# Mensagens flash agora são incluídas no base.html através do _flash_messages.html #}
+
+        <form method="POST">
+            {{ form.csrf_token }} {# Adiciona o token CSRF gerado pelo Flask-WTF #}
+            <div class="form-container">
+                <div class="form-section">
+                    <h2>Dados Pessoais</h2>
+
+                    <label for="nome">Nome:</label>
+                    {{ form.nome(placeholder="Digite seu nome completo", class="form-control") }}
+                    {% if form.nome.errors %}
+                        <ul class="errors">
+                            {% for error in form.nome.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <label for="email">Email:</label>
+                    {{ form.email(placeholder="exemplo@dominio.com", class="form-control") }}
+                    {% if form.email.errors %}
+                        <ul class="errors">
+                            {% for error in form.email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <label for="senha">Senha:</label>
+                    {{ form.senha(placeholder="Digite sua senha", class="form-control") }}
+                    {% if form.senha.errors %}
+                        <ul class="errors">
+                            {% for error in form.senha.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <label for="confirmar_senha">Confirmar Senha:</label>
+                    {{ form.confirmar_senha(placeholder="Confirme sua senha", class="form-control") }}
+                    {% if form.confirmar_senha.errors %}
+                        <ul class="errors">
+                            {% for error in form.confirmar_senha.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            {{ form.submit(class="btn btn-primary") }} {# Renderiza o botão de submit #}
+        </form>
+
+        <p>Já tem uma conta? <a href="{{ url_for('auth.login') }}">Faça login</a></p>
+    </div>
+{% endblock %}

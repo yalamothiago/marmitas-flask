@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Loja de Marmitas{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {# Mova o meta tag CSRF para o head se estiver em um arquivo .js externo #}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {# Defina a URL de login aqui para uso em JavaScript #}
+    <script>
+        const LOGIN_URL = "{{ url_for('auth.login') }}";
+        // Defina as URLs base das rotas AJAX do carrinho aqui (se as requisições AJAX vierem de outros lugares além de carrinho.html)
+        const AUMENTAR_URL_BASE = "{{ url_for('carrinho.aumentar', carrinho_item_id=0) }}".replace('/0', '/');
+        const DIMINUIR_URL_BASE = "{{ url_for('carrinho.diminuir', carrinho_item_id=0) }}".replace('/0', '/');
+        const REMOVER_URL_BASE = "{{ url_for('carrinho.remover_item_completo', carrinho_item_id=0) }}".replace('/0', '/');
+    </script>
+    {# Se tiver um script global (ex: main.js), inclua aqui #}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block head_extra %}{% endblock %} {# Bloco para CSS/JS extra por página #}
+</head>
+<body>
+    {# Inclui o header, que será um arquivo separado #}
+    {% include 'includes/_header.html' %}
+
+    <div class="main-content">
+        {# Inclui o bloco de mensagens flash, que será um arquivo separado #}
+        {% include 'includes/_flash_messages.html' %}
+
+        {% block content %}{% endblock %} {# Onde o conteúdo de cada página vai #}
+    </div>
+
+    {% block body_extra_scripts %}{% endblock %} {# Bloco para scripts JS no final do body #}
+</body>
+</html>

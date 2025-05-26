@@ -1,20 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Finalizar Pedido</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script>
-        function toggleTroco() {
-            const pagamento = document.querySelector('input[name="pagamento"]:checked');
-            const trocoDiv = document.getElementById('troco-div');
-            trocoDiv.style.display = pagamento && pagamento.value === 'Dinheiro' ? 'block' : 'none';
-        }
+{% extends 'base.html' %}
 
-        window.onload = toggleTroco;
-    </script>
-</head>
-<body>
+{% block title %}Finalizar Pedido{% endblock %}
+
+{# Se houver scripts JS específicos para a página de checkout, inclua-os aqui no final do body #}
+{% block body_extra_scripts %}
+
+{% endblock %}
+
+{% block content %}
     <div class="main-content"> {# Envolvendo o conteúdo em um container #}
         <h1>Finalizar Pedido</h1>
 
@@ -25,34 +18,28 @@
             {% endfor %}
         </ul>
         <strong class="checkout-total">Total: R$ {{ total|round(2) }}</strong>
-        
+
 
         <hr>
 
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
             <label>Forma de pagamento:</label><br>
-            <label><input type="radio" name="pagamento" value="Cartão" onclick="toggleTroco()" required> Cartão</label><br>
+            <label><input type="radio" name="pagamento" value="Cartão" required> Cartão</label><br>
             <label><input type="radio" name="pagamento" value="Pix" onclick="toggleTroco()"> Pix</label><br>
-            <label><input type="radio" name="pagamento" value="Dinheiro" onclick="toggleTroco()"> Dinheiro</label><br><br>
 
-            <div id="troco-div" style="display: none;">
-                <label for="troco">Troco para quanto?</label>
-                <input type="number" step="0.01" name="troco" placeholder="Ex: 50.00"><br><br> {# Tipo number e placeholder #}
-            </div>
-
-            <label>Endereço para entrega:</label><br>
-            <div class="endereco-box">
-                <p>{{ endereco }}</p>
-            </div>
-            <input type="hidden" name="endereco" value="{{ endereco }}">
-
+            {# Adicione o campo de troco aqui, se você usa a funcionalidade de Pix com troco #}
+            {# <div id="campoTroco" style="display: none;">
+                <label for="valor_pago">Valor Pago (para troco):</label><br>
+                <input type="number" step="0.01" name="valor_pago" id="valor_pago">
+            </div> #}
 
             <button type="submit">Confirmar Pedido</button>
         </form>
 
         <div class="text-center-link"> {# Para centralizar o botão de voltar #}
-            <a href="{{ url_for('index') }}" class="btn-voltar">← Voltar ao Cardápio</a>
+            <a href="{{ url_for('main.index') }}" class="btn-voltar">← Voltar ao Cardápio</a>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,25 @@
+<header>
+    <div class="header-left">
+        <a href="{{ url_for('main.index') }}" class="btn-voltar">Cardápio</a>
+    </div>
+    <div class="header-center">
+        {% if usuario_logado %}
+            <span class="user-name">Olá, {{ usuario_logado.nome }}!</span>
+        {% endif %}
+    </div>
+    <div class="header-right">
+        <a href="{{ url_for('main.ver_carrinho') }}" class="carrinho-link">
+            Carrinho ({% if total_itens_carrinho is defined %}{{ total_itens_carrinho }}{% else %}0{% endif %})
+        </a>
+        
+        {% if usuario_logado and usuario_logado.administrador %}
+            <a href="{{ url_for('admin.painel_admin') }}" class="btn">Painel Admin</a>
+        {% endif %}
+        
+        {% if usuario_logado %}
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">Sair</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn">Login</a>
+        {% endif %}
+    </div>
+</header>
