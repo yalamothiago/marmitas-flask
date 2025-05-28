@@ -1,78 +1,45 @@
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 
-{% block title %}Painel Admin{% endblock %}
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block page_title %}Dashboard Administrativo{% endblock %}
 
 {% block content %}
-    <h1>Painel do Administrador</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+    <a href="{{ url_for('admin.gerenciar_ingredientes') }}" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+        <h3 class="text-xl font-semibold text-indigo-700 mb-2">Ingredientes</h3>
+        <p class="text-gray-600">Gerencie todos os ingredientes disponíveis.</p>
+        <div class="mt-4 text-indigo-500 font-medium">Ver Ingredientes &rarr;</div>
+    </a>
 
-    <div class="admin-sections">
-        <section class="admin-section">
-            <h2>Gerenciar Marmitas</h2>
-            <p><a href="{{ url_for('admin.adicionar_marmita') }}" class="btn">Adicionar Nova Marmita</a></p>
-            <h3>Lista de Marmitas Ativas:</h3>
-            <ul>
-                {% for marmita in marmitas %}
-                    <li class="marmita-item">
-                        <strong>{{ marmita.nome }}</strong> - 
-                        R$ {{ "%.2f"|format(marmita.preco) }} - 
-                        Estoque: {{ marmita.quantidade }} <br>
-                        Custo Base: R$ {{ "%.2f"|format(marmita.custo_producao_base) if marmita.custo_producao_base is not none else 'N/A' }} <br>
-                        Margem: {{ "%.2f"|format(marmita.margem_lucro_percentual) if marmita.margem_lucro_percentual is not none else 'N/A' }}%
-                        
-                        {# Formulário de Produção (Atualizar Estoque) #}
-                        <form method="POST" action="{{ url_for('admin.atualizar_estoque', id=marmita.id) }}">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <label for="quantidade_adicional">Produzir mais:</label>
-                            <input type="number" name="quantidade_adicional" min="1" required>
-                            <button type="submit">Produzir</button>
-                        </form>
-                        
-                        {# Links para gerenciar condimentos da marmita (funcionalidade futura) #}
-                        {# <a href="{{ url_for('admin.gerenciar_condimentos_marmita', marmita_id=marmita.id) }}">Gerenciar Condimentos</a> #}
+    <a href="{{ url_for('admin.gerenciar_condimentos') }}" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+        <h3 class="text-xl font-semibold text-green-700 mb-2">Condimentos</h3>
+        <p class="text-gray-600">Crie e edite condimentos, associando ingredientes.</p>
+        <div class="mt-4 text-green-500 font-medium">Ver Condimentos &rarr;</div>
+    </a>
 
-                        <a href="{{ url_for('admin.deletar_marmita', id=marmita.id) }}" onclick="return confirm('Deseja deletar esta marmita?')">Deletar</a>
-                    </li>
-                {% else %}
-                    <li>Nenhuma marmita cadastrada.</li>
-                {% endfor %}
-            </ul>
-        </section>
+    <a href="{{ url_for('admin.gerenciar_marmitas') }}" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+        <h3 class="text-xl font-semibold text-purple-700 mb-2">Marmitas (Receitas)</h3>
+        <p class="text-gray-600">Defina suas receitas de marmitas e seus componentes.</p>
+        <div class="mt-4 text-purple-500 font-medium">Ver Marmitas &rarr;</div>
+    </a>
 
-        <section class="admin-section">
-            <h2>Gerenciar Ingredientes</h2>
-            <p><a href="{{ url_for('admin.adicionar_ingrediente') }}" class="btn">Adicionar Novo Ingrediente</a></p>
-            <h3>Lista de Ingredientes:</h3>
-            <ul>
-                {% for ingrediente in ingredientes %}
-                    <li>
-                        <strong>{{ ingrediente.nome }}</strong> - 
-                        Estoque: {{ ingrediente.quantidade }} {{ ingrediente.unidade_medida }} - 
-                        Custo Unit.: R$ {{ "%.4f"|format(ingrediente.custo_por_unidade) if ingrediente.custo_por_unidade is not none else 'N/A' }}
-                        {# Links para atualizar/deletar ingrediente (funcionalidade futura) #}
-                    </li>
-                {% else %}
-                    <li>Nenhum ingrediente cadastrado.</li>
-                {% endfor %}
-            </ul>
-        </section>
+    <a href="{{ url_for('admin.gerenciar_precificacoes') }}" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+        <h3 class="text-xl font-semibold text-orange-700 mb-2">Precificação</h3>
+        <p class="text-gray-600">Defina preços de venda, margens e lucros das marmitas.</p>
+        <div class="mt-4 text-orange-500 font-medium">Ver Precificação &rarr;</div>
+    </a>
 
-        <section class="admin-section">
-            <h2>Gerenciar Condimentos</h2>
-            <p><a href="{{ url_for('admin.adicionar_condimento') }}" class="btn">Adicionar Novo Condimento</a></p>
-            <h3>Lista de Condimentos:</h3>
-            <ul>
-                {% for condimento in condimentos %}
-                    <li>
-                        <strong>{{ condimento.nome }}</strong> - 
-                        Rendimento: {{ condimento.rendimento }} {{ condimento.unidade_medida }} - 
-                        Custo Unit.: R$ {{ "%.4f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}
-                        <a href="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}">Gerenciar Ingredientes</a>
-                        {# Links para atualizar/deletar condimento (funcionalidade futura) #}
-                    </li>
-                {% else %}
-                    <li>Nenhum condimento cadastrado.</li>
-                {% endfor %}
-            </ul>
-        </section>
-    </div>
+    <a href="{{ url_for('admin.gerenciar_estoque') }}" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+        <h3 class="text-xl font-semibold text-teal-700 mb-2">Estoque</h3>
+        <p class="text-gray-600">Gerencie a quantidade de marmitas prontas para venda.</p>
+        <div class="mt-4 text-teal-500 font-medium">Ver Estoque &rarr;</div>
+    </a>
+
+    <a href="{{ url_for('admin.gerenciar_pedidos') }}" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+        <h3 class="text-xl font-semibold text-red-700 mb-2">Pedidos</h3>
+        <p class="text-gray-600">Visualize e gerencie os pedidos dos clientes.</p>
+        <div class="mt-4 text-red-500 font-medium">Ver Pedidos &rarr;</div>
+    </a>
+</div>
 {% endblock %}

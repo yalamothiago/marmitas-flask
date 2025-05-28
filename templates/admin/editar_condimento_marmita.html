@@ -1,0 +1,33 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Editar Condimento da Marmita{% endblock %}
+
+{% block page_title %}Editar Condimento "{{ marmita_condimento.condimento.nome }}" na Marmita "{{ marmita.nome }}"{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <form method="POST" action="{{ url_for('admin.editar_condimento_marmita', marmita_id=marmita.id, item_id=marmita_condimento.id) }}" class="space-y-6">
+        {{ form.csrf_token }}
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Condimento</label>
+            <input type="text" value="{{ marmita_condimento.condimento.nome }}" disabled class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed sm:text-sm">
+        </div>
+
+        <div>
+            {{ form.quantidade_do_condimento.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.quantidade_do_condimento(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.quantidade_do_condimento.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200", value="Atualizar Quantidade") }}
+        </div>
+    </form>
+    <div class="mt-6 text-center">
+        <a href="{{ url_for('admin.associar_condimento_a_marmita', marmita_id=marmita.id) }}" class="text-blue-600 hover:text-blue-800 text-sm">Voltar para Condimentos da Marmita</a>
+    </div>
+</div>
+{% endblock %}

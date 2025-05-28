@@ -1,0 +1,75 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Associar Condimento a Marmita{% endblock %}
+
+{% block page_title %}Associar Condimento a: {{ marmita.nome }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Associar Novo Condimento</h3>
+    <form method="POST" action="{{ url_for('admin.associar_condimento_a_marmita', marmita_id=marmita.id) }}" class="space-y-6 mb-8">
+        {{ form.csrf_token }}
+
+        <div>
+            {{ form.condimento_id.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.condimento_id(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.condimento_id.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.quantidade_do_condimento.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.quantidade_do_condimento(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.quantidade_do_condimento.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200") }}
+        </div>
+    </form>
+
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Condimentos Atuais da Marmita</h3>
+    {% if marmita_condimentos_existentes %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Condimento</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quantidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário Condimento</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo x Quantidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in marmita_condimentos_existentes %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ item.condimento.nome if item.condimento else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(item.quantidade_do_condimento) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(item.condimento.custo_unitario) if item.condimento and item.condimento.custo_unitario is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        R$ {{ "%.2f"|format(item.quantidade_do_condimento * item.condimento.custo_unitario) if item.condimento and item.condimento.custo_unitario is not none else 'N/A' }}
+                    </td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
+                        <a href="{{ url_for('admin.editar_condimento_marmita', marmita_id=marmita.id, item_id=item.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
+                        <form action="{{ url_for('admin.deletar_condimento_marmita', marmita_id=marmita.id, item_id=item.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este condimento da marmita?');">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-600 mt-8">Nenhum condimento associado a esta marmita ainda.</p>
+    {% endif %}
+
+    <div class="mt-8 text-center">
+        <a href="{{ url_for('admin.gerenciar_marmitas') }}" class="text-purple-600 hover:text-purple-800 text-sm">Voltar para Gerenciar Marmitas</a>
+    </div>
+</div>
+{% endblock %}

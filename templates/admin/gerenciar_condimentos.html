@@ -1,27 +1,55 @@
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 
 {% block title %}Gerenciar Condimentos{% endblock %}
 
+{% block page_title %}Gerenciar Condimentos{% endblock %}
+
 {% block content %}
-    <h1>Gerenciar Condimentos</h1>
-    <p><a href="{{ url_for('admin.adicionar_condimento') }}" class="btn">Adicionar Novo Condimento</a></p>
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="flex justify-end mb-6">
+        <a href="{{ url_for('admin.adicionar_condimento') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+            Adicionar Novo Condimento
+        </a>
+    </div>
 
     {% if condimentos %}
-        <ul class="data-list">
-            {% for condimento in condimentos %}
-                <li>
-                    <strong>{{ condimento.nome }}</strong>: 
-                    Rendimento: {{ condimento.rendimento }} {{ condimento.unidade_medida }} | 
-                    Custo Unitário: R$ {{ "%.4f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}
-                    <br>
-                    <a href="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}">Gerenciar Ingredientes</a>
-                    {# Futuramente: Botões para editar/deletar #}
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Total</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Rendimento</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unidade Rend.</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for condimento in condimentos %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ condimento.id }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ condimento.nome }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(condimento.custo_total) if condimento.custo_total is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(condimento.rendimento) if condimento.rendimento is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ condimento.unidade_medida_rendimento if condimento.unidade_medida_rendimento is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
+                        <a href="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Ingredientes</a>
+                        <a href="{{ url_for('admin.editar_condimento', condimento_id=condimento.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
+                        <form action="{{ url_for('admin.deletar_condimento', condimento_id=condimento.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este condimento? Isso também removerá seus ingredientes associados.');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p>Nenhum condimento cadastrado ainda.</p>
+    <p class="text-center text-gray-600 mt-8">Nenhum condimento cadastrado ainda.</p>
     {% endif %}
-
-    <p><a href="{{ url_for('admin.painel_admin') }}">Voltar ao Painel Admin</a></p>
+</div>
 {% endblock %}

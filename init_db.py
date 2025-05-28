@@ -1,11 +1,11 @@
 # init_db.py (ou reset_db.py)
-from app import app, db, Usuario # Importe a instância 'app' diretamente
+from app import create_app, db, Usuario # Importe a instância 'app' diretamente
 from sqlalchemy import text
 from flask_migrate import upgrade, stamp, current # Importe os comandos de migração
 import os
 # from models import db, Usuario # Remova esta linha se db e Usuario já estiverem importados de app
 
-# A instância 'app' já está disponível, então não precisa de create_app()
+app = create_app()
 
 with app.app_context():
     # PASSO 1: DELETAR TODO O SCHEMA (inclusive tabelas com dependências)

@@ -1,149 +1,46 @@
 {% extends 'base.html' %}
 
-{% block title %}Carrinho{% endblock %}
-
-{# Se você tiver JavaScript específico para o carrinho que não seja global, ele pode ir aqui #}
-{% block body_extra_scripts %}
-<script>
-    // Função para obter o token CSRF do meta tag (no base.html)
-    function getCsrfToken() {
-        let token = document.querySelector('meta[name="csrf-token"]')?.content;
-        if (token) return token;
-
-        console.error("CSRF Token não encontrado. Certifique-se de que está sendo injetado no HTML.");
-        return '';
-    }
-
-    function handleAjaxResponse(response) {
-        if (response.headers.get('content-type') && !response.headers.get('content-type').includes('application/json')) {
-            if (response.status === 401) { // Apenas verifica o status 401
-                alert("Sua sessão expirou ou você não está logado. Por favor, faça login novamente.");
-                // Use a variável global LOGIN_URL definida em base.html
-                window.location.href = LOGIN_URL + "?next=" + encodeURIComponent(window.location.pathname);
-                return Promise.reject('Redirecionando para login.');
-            }
-            return response.text().then(text => {
-                console.error('Resposta não-JSON recebida:', text);
-                throw new Error('Ocorreu um erro inesperado no servidor. Detalhes no console.');
-            });
-        }
-        return response.json();
-    }
-
-    // Funções AJAX atualizadas para usar as URLs base globais e incluir o token CSRF
-    function aumentarItem(carrinhoItemId) {
-        const csrfToken = getCsrfToken();
-        fetch(AUMENTAR_URL_BASE + carrinhoItemId, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(handleAjaxResponse)
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.mensagem);
-            }
-        })
-        .catch(error => {
-            console.error('Erro na requisição AUMENTAR:', error);
-            if (error.message !== 'Redirecionando para login.') {
-                alert(error.message);
-            }
-        });
-    }
-    
-    function diminuirItem(carrinhoItemId) {
-        const csrfToken = getCsrfToken();
-        fetch(DIMINUIR_URL_BASE + carrinhoItemId, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(handleAjaxResponse)
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.mensagem);
-            }
-        })
-        .catch(error => {
-            console.error('Erro na requisição DIMINUIR:', error);
-            if (error.message !== 'Redirecionando para login.') {
-                alert(error.message);
-            }
-        });
-    }
-
-    function removerItemCompleto(carrinhoItemId) {
-        if (confirm('Tem certeza que deseja remover todos os itens deste produto do carrinho?')) {
-            const csrfToken = getCsrfToken();
-            fetch(REMOVER_URL_BASE + carrinhoItemId, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(handleAjaxResponse)
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.mensagem);
-                }
-            })
-            .catch(error => {
-                console.error('Erro na requisição REMOVER:', error);
-                if (error.message !== 'Redirecionando para login.') {
-                    alert(error.message);
-                }
-            });
-        }
-    }
-</script>
-{% endblock %}
+{% block title %}Meu Carrinho{% endblock %}
 
 {% block content %}
-    <div class="cart-container">
-        <h1>Seu Carrinho</h1>
+<div class="cart-container"> {# Classe do seu style.css #}
+    <h1>Meu Carrinho de Compras</h1> {# O h1 dentro de .cart-container já tem estilo no seu CSS #}
 
-        {# Mensagens flash agora são incluídas no base.html #}
+    {% if itens %}
+        <ul class="cart-items-list"> {# Classe do seu style.css #}
+            {% for item in itens %}
+            <li class="cart-item"> {# Classe do seu style.css #}
+                <div class="item-main-info"> {# Classe do seu style.css #}
+                    {# Se você tiver imagens no carrinho, precisaria de uma tag <img> aqui #}
+                    <span class="item-name">{{ item.marmita.nome }}</span> {# Classe do seu style.css #}
+                    <span class="item-price">Preço Unitário: R$ {{ "%.2f"|format(item.preco_unitario) }}</span> {# Classe do seu style.css #}
+                </div>
+                <div class="item-quantity-control"> {# Classe do seu style.css #}
+                    <form action="{{ url_for('main.atualizar_quantidade_carrinho', item_id=item.carrinho_item_id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" name="quantidade" value="{{ item.quantidade - 1 }}" class="btn-quant" {% if item.quantidade == 1 %}disabled{% endif %}>-</button> {# Classe do seu style.css #}
+                        <span class="current-quantity">{{ item.quantidade }}</span> {# Classe do seu style.css #}
+                        <button type="submit" name="quantidade" value="{{ item.quantidade + 1 }}" class="btn-quant">+</button> {# Classe do seu style.css #}
+                    </form>
+                    <form action="{{ url_for('main.remover_do_carrinho', item_id=item.carrinho_item_id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-danger btn-sm">Remover</button> {# Classes do seu style.css #}
+                    </form>
+                </div>
+                <span class="item-subtotal">R$ {{ "%.2f"|format(item.subtotal) }}</span> {# Classe do seu style.css #}
+            </li>
+            {% endfor %}
+        </ul>
 
-        {% if itens %}
-            <ul class="cart-items-list">
-                {% for item in itens %}
-                    <li class="cart-item">
-                        <div class="item-main-info">
-                            <span class="item-name">{{ item.marmita.nome }}</span>
-                            <span class="item-price">R$ {{ "%.2f"|format(item.preco_unitario) }}</span>
-                        </div>
-                        <div class="item-quantity-control">
-                            <button onclick="diminuirItem({{ item.carrinho_item_id }})" class="btn-quant">-</button>
-                            <span class="current-quantity">{{ item.quantidade }}</span>
-                            <button onclick="aumentarItem({{ item.carrinho_item_id }})" class="btn-quant">+</button>
-                            <button onclick="removerItemCompleto({{ item.carrinho_item_id }})" class="btn-quant btn-danger">Excluir</button>
-                        </div>
-                        <div class="item-subtotal">
-                            R$ {{ "%.2f"|format(item.subtotal) }}
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-
-            <div class="cart-summary">
-                <p class="cart-total">Total: **R$ {{ "%.2f"|format(total) }}**</p>
-                <a href="{{ url_for('main.checkout') }}" class="btn-finalizar">Finalizar Compra</a>
-            </div>
-        {% else %}
-            <p class="cart-empty-message">Seu carrinho está vazio. Adicione algumas marmitas!</p>
-            <a href="{{ url_for('main.index') }}" class="btn-finalizar">Ir para o Cardápio</a>
-        {% endif %}
-    </div>
+        <div class="cart-summary"> {# Classe do seu style.css #}
+            <span class="cart-total">Total: R$ {{ "%.2f"|format(total) }}</span> {# Classe do seu style.css #}
+            <a href="{{ url_for('main.checkout') }}" class="btn-finalizar">Finalizar Compra</a> {# Classe do seu style.css #}
+        </div>
+    {% else %}
+        <p class="cart-empty-message">Seu carrinho está vazio.</p> {# Classe do seu style.css #}
+        <div class="text-center-link"> {# Classe do seu style.css #}
+            <a href="{{ url_for('main.index') }}" class="btn-voltar">Voltar ao Cardápio</a> {# Classe do seu style.css #}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

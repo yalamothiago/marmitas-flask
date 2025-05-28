@@ -1,0 +1,56 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Gerenciar Estoque{% endblock %}
+
+{% block page_title %}Gerenciar Estoque{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="flex justify-end mb-6">
+        <a href="{{ url_for('admin.produzir_marmitas_estoque') }}" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+            Produzir Marmitas para Estoque
+        </a>
+    </div>
+
+    {% if estoques %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome da Marmita</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Marmita (Ref.)</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quantidade em Estoque</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estoque_item in estoques %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ estoque_item.id }}</td>
+                    {# CORREÇÃO: Acessar nome via precificacao_referencia #}
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        {{ estoque_item.precificacao_referencia.marmita.nome if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.marmita else 'N/A' }}
+                    </td>
+                    {# CORREÇÃO: Acessar custo via precificacao_referencia.custo_marmita #}
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        R$ {{ "%.2f"|format(estoque_item.precificacao_referencia.custo_marmita) if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.custo_marmita is not none else 'N/A' }}
+                    </td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ estoque_item.quantidade }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
+                        <a href="{{ url_for('admin.ajustar_estoque', estoque_id=estoque_item.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Ajustar Quantidade</a>
+                        <form action="{{ url_for('admin.deletar_estoque', estoque_id=estoque_item.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este registro de estoque?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-600 mt-8">Nenhum item em estoque cadastrado ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

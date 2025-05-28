@@ -1,23 +1,34 @@
+# app.py (Revisado para depuração CSRF)
+from flask import Flask, session
+from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect # Mantenha esta importação
+#import os
+
+# NÃO importe load_dotenv e nem tenha prints de SECRET_KEY aqui
+# A SECRET_KEY deve estar FIXA no config.py
 from flask import Flask, session
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
-from dotenv import load_dotenv
-import os
+# REMOVER: from dotenv import load_dotenv
+import os # Manter se usado para algo mais, mas não para SECRET_KEY
 
-from models import db, Usuario, Carrinho # Importe todos os modelos necessários
-from config import Config # Importa a classe de configuração
+from models import db, Usuario, Carrinho
+from config import Config
 
-load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config) # Carrega as configurações da classe Config
+    app.config.from_object(Config)
+
+    csrf = CSRFProtect() # Não passe 'app' direto aqui
+    csrf.init_app(app)
+
 
     db.init_app(app)
     migrate = Migrate(app, db)
-    csrf = CSRFProtect(app)
+    # Remova qualquer outra linha csrf = ... se existir
 
-    # Context processor
+    # Context processor (permanece como está)
     @app.context_processor
     def inject_usuario_logado():
         if 'usuario_id' in session:
@@ -28,14 +39,14 @@ def create_app():
                 return dict(usuario_logado=usuario, total_itens_carrinho=total_itens_carrinho)
         return dict(usuario_logado=None, total_itens_carrinho=0)
 
-    # Registro de Blueprints (ver próximo item)
+    # Registro de Blueprints (permanece como está)
     from routes.auth import auth_bp
     from routes.admin import admin_bp
     from routes.main import main_bp
     from routes.carrinho import carrinho_bp 
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(admin_bp, url_prefix='/admin') # Prefixo para rotas de admin
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(main_bp)
     app.register_blueprint(carrinho_bp)
 

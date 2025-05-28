@@ -1,12 +1,12 @@
 {% extends 'admin/base_admin.html' %}
 
-{% block title %}Adicionar Marmita (Receita){% endblock %}
+{% block title %}Editar Marmita (Receita){% endblock %}
 
-{% block page_title %}Adicionar Nova Marmita (Receita){% endblock %}
+{% block page_title %}Editar Marmita: {{ marmita.nome }}{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-    <form method="POST" action="{{ url_for('admin.adicionar_marmita') }}" class="space-y-6">
+    <form method="POST" action="{{ url_for('admin.editar_marmita', marmita_id=marmita.id) }}" class="space-y-6">
         {{ form.csrf_token }}
 
         <div>
@@ -34,7 +34,7 @@
         </div>
 
         <div>
-            {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200") }}
+            {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200", value="Atualizar Marmita") }}
         </div>
     </form>
     <div class="mt-6 text-center">

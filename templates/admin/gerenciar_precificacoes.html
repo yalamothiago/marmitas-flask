@@ -1,0 +1,54 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Gerenciar Precificações{% endblock %}
+
+{% block page_title %}Gerenciar Precificações{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="flex justify-end mb-6">
+        <a href="{{ url_for('admin.adicionar_precificacao') }}" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+            Adicionar Nova Precificação
+        </a>
+    </div>
+
+    {% if precificacoes %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome da Marmita</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Marmita</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Valor de Venda</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Margem de Lucro (%)</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Valor do Lucro</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for precificacao in precificacoes %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ precificacao.id }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ precificacao.marmita.nome if precificacao.marmita else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(precificacao.custo_marmita) if precificacao.custo_marmita is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(precificacao.valor_de_venda) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(precificacao.margem_de_lucro_percentual) if precificacao.margem_de_lucro_percentual is not none else 'N/A' }}%</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(precificacao.valor_do_lucro) if precificacao.valor_do_lucro is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
+                        <a href="{{ url_for('admin.editar_precificacao', precificacao_id=precificacao.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
+                        <form action="{{ url_for('admin.deletar_precificacao', precificacao_id=precificacao.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar esta precificação?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-600 mt-8">Nenhuma precificação cadastrada ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

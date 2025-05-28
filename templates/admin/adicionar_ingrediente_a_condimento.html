@@ -1,44 +1,75 @@
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 
-{% block title %}Adicionar Ingredientes a {{ condimento.nome }}{% endblock %}
+{% block title %}Adicionar Ingrediente a Condimento{% endblock %}
+
+{% block page_title %}Adicionar Ingrediente a: {{ condimento.nome }}{% endblock %}
 
 {% block content %}
-    <h1>Gerenciar Ingredientes para {{ condimento.nome }}</h1>
-    <p>Custo Unitário Atual do Condimento: R$ {{ "%.4f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}</p>
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Adicionar Novo Ingrediente</h3>
+    <form method="POST" action="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}" class="space-y-6 mb-8">
+        {{ form.csrf_token }}
 
-    <h2>Adicionar Ingrediente</h2>
-    <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div>
-            <label for="ingrediente_id">Ingrediente:</label><br>
-            <select name="ingrediente_id" class="form-control" required>
-                <option value="">Selecione um ingrediente</option>
-                {% for ing in ingredientes_disponiveis %}
-                    <option value="{{ ing.id }}">{{ ing.nome }} (Estoque: {{ ing.quantidade }} {{ ing.unidade_medida }}, Custo Unit.: R$ {{ "%.4f"|format(ing.custo_por_unidade) if ing.custo_por_unidade is not none else 'N/A' }})</option>
-                {% endfor %}
-            </select>
+            {{ form.ingrediente_id.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.ingrediente_id(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.ingrediente_id.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
         </div>
+
         <div>
-            <label for="quantidade">Quantidade (na unidade do ingrediente):</label><br>
-            <input type="number" step="0.01" name="quantidade" class="form-control" required>
+            {{ form.quantidade_do_ingrediente.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.quantidade_do_ingrediente(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.quantidade_do_ingrediente.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
         </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Adicionar</button>
+
+        <div>
+            {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200") }}
+        </div>
     </form>
 
-    <h2>Ingredientes Atuais do Condimento</h2>
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Ingredientes Atuais do Condimento</h3>
     {% if condimento_itens_existentes %}
-        <ul class="data-list">
-            {% for ci in condimento_itens_existentes %}
-                <li>
-                    <strong>{{ ci.ingrediente.nome }}</strong>: {{ ci.quantidade }} (Custo por unidade: R$ {{ "%.4f"|format(ci.ingrediente.custo_por_unidade) if ci.ingrediente.custo_por_unidade is not none else 'N/A' }})
-                    {# Futuramente: Botões para editar/remover #}
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ingrediente</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quantidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo p/ Unidade Ingrediente</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo x Quantidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in condimento_itens_existentes %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ item.ingrediente.nome if item.ingrediente else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(item.quantidade_do_ingrediente) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(item.ingrediente.custo_por_unidade) if item.ingrediente and item.ingrediente.custo_por_unidade is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        R$ {{ "%.2f"|format(item.quantidade_do_ingrediente * item.ingrediente.custo_por_unidade) if item.ingrediente and item.ingrediente.custo_por_unidade is not none else 'N/A' }}
+                    </td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
+                        <a href="{{ url_for('admin.editar_ingrediente_condimento', condimento_id=condimento.id, item_id=item.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
+                        <form action="{{ url_for('admin.deletar_ingrediente_condimento', condimento_id=condimento.id, item_id=item.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este ingrediente do condimento?');">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p>Nenhum ingrediente associado a este condimento ainda.</p>
+    <p class="text-center text-gray-600 mt-8">Nenhum ingrediente associado a este condimento ainda.</p>
     {% endif %}
 
-    <p><a href="{{ url_for('admin.gerenciar_condimentos') }}">Voltar para Gerenciar Condimentos</a></p>
+    <div class="mt-8 text-center">
+        <a href="{{ url_for('admin.gerenciar_condimentos') }}" class="text-green-600 hover:text-green-800 text-sm">Voltar para Gerenciar Condimentos</a>
+    </div>
+</div>
 {% endblock %}

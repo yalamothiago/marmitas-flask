@@ -1,45 +1,49 @@
 {% extends 'base.html' %}
 
-{% block title %}Finalizar Pedido{% endblock %}
-
-{# Se houver scripts JS específicos para a página de checkout, inclua-os aqui no final do body #}
-{% block body_extra_scripts %}
-
-{% endblock %}
+{% block title %}Finalizar Compra{% endblock %}
 
 {% block content %}
-    <div class="main-content"> {# Envolvendo o conteúdo em um container #}
-        <h1>Finalizar Pedido</h1>
+<div class="main-content"> {# Reutilizei a classe main-content aqui para o container principal #}
+    <h1 class="page-title">Finalizar Compra</h1> {# Usei page-title para ter um H1 consistente #}
 
-        <h2>Resumo do Pedido</h2>
-        <ul class="checkout-items-list"> {# Nova classe para estilização específica #}
+    {% if not itens %}
+        <p class="cart-empty-message">Seu carrinho está vazio. Por favor, adicione itens antes de finalizar a compra.</p>
+        <div class="text-center-link">
+            <a href="{{ url_for('main.index') }}" class="btn-voltar">Voltar ao Cardápio</a>
+        </div>
+    {% else %}
+        <h2>Resumo do Pedido</h2> {# O h2 já tem estilo no seu CSS #}
+        <ul class="checkout-items-list"> {# Classe do seu style.css #}
             {% for item in itens %}
-                <li>{{ item.marmita.nome }} - {{ item.quantidade }}x - **R$ {{ item.subtotal|round(2) }}**</li>
+            <li>
+                <span>{{ item.marmita.nome }} ({{ item.quantidade }}x)</span>
+                <strong>R$ {{ "%.2f"|format(item.subtotal) }}</strong>
+            </li>
             {% endfor %}
         </ul>
-        <strong class="checkout-total">Total: R$ {{ total|round(2) }}</strong>
 
+        <span class="checkout-total">Total a Pagar: R$ {{ "%.2f"|format(total) }}</span> {# Classe do seu style.css #}
 
-        <hr>
-
-        <form method="POST">
+        <h2>Forma de Pagamento</h2> {# O h2 já tem estilo no seu CSS #}
+        <form method="POST" action="{{ url_for('main.checkout') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div>
+                <label class="form-label">Selecione a Forma de Pagamento:</label> {# Usei form-label, defina no seu CSS se não existir #}
+                <div class="payment-options"> {# Criei esta div para estilizar as opções de pagamento #}
+                    <label>
+                        <input type="radio" name="pagamento" value="Pix" required>
+                        <span>Pix</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="pagamento" value="Cartao" required>
+                        <span>Cartão de Crédito/Débito</span>
+                    </label>
+                </div>
+            </div>
 
-            <label>Forma de pagamento:</label><br>
-            <label><input type="radio" name="pagamento" value="Cartão" required> Cartão</label><br>
-            <label><input type="radio" name="pagamento" value="Pix" onclick="toggleTroco()"> Pix</label><br>
-
-            {# Adicione o campo de troco aqui, se você usa a funcionalidade de Pix com troco #}
-            {# <div id="campoTroco" style="display: none;">
-                <label for="valor_pago">Valor Pago (para troco):</label><br>
-                <input type="number" step="0.01" name="valor_pago" id="valor_pago">
-            </div> #}
-
-            <button type="submit">Confirmar Pedido</button>
+            <button type="submit" class="btn-finalizar">Confirmar Pedido</button> {# Classe do seu style.css #}
         </form>
-
-        <div class="text-center-link"> {# Para centralizar o botão de voltar #}
-            <a href="{{ url_for('main.index') }}" class="btn-voltar">← Voltar ao Cardápio</a>
-        </div>
-    </div>
+    {% endif %}
+</div>
 {% endblock %}

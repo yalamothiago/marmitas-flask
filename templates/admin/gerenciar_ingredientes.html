@@ -1,26 +1,54 @@
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 
 {% block title %}Gerenciar Ingredientes{% endblock %}
 
+{% block page_title %}Gerenciar Ingredientes{% endblock %}
+
 {% block content %}
-    <h1>Gerenciar Ingredientes</h1>
-    <p><a href="{{ url_for('admin.adicionar_ingrediente') }}" class="btn">Adicionar Novo Ingrediente</a></p>
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="flex justify-end mb-6">
+        <a href="{{ url_for('admin.adicionar_ingrediente') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md">
+            Adicionar Novo Ingrediente
+        </a>
+    </div>
 
     {% if ingredientes %}
-        <ul class="data-list">
-            {% for ingrediente in ingredientes %}
-                <li>
-                    <strong>{{ ingrediente.nome }}</strong>: 
-                    Estoque: {{ ingrediente.quantidade }} {{ ingrediente.unidade_medida }} | 
-                    Total Pago: R$ {{ "%.2f"|format(ingrediente.total_pago) if ingrediente.total_pago is not none else 'N/A' }} | 
-                    Custo Unitário: R$ {{ "%.4f"|format(ingrediente.custo_por_unidade) if ingrediente.custo_por_unidade is not none else 'N/A' }}
-                    {# Futuramente: Botões para editar/deletar #}
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quant. Comprada</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Total Pago</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo p/ Unidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ingrediente in ingredientes %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ ingrediente.id }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ ingrediente.nome }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(ingrediente.quantidade_comprada) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ ingrediente.unidade_medida }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(ingrediente.total_pago) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(ingrediente.custo_por_unidade) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
+                        <a href="{{ url_for('admin.editar_ingrediente', ingrediente_id=ingrediente.id) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
+                        <form action="{{ url_for('admin.deletar_ingrediente', ingrediente_id=ingrediente.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este ingrediente?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p>Nenhum ingrediente cadastrado ainda.</p>
+    <p class="text-center text-gray-600 mt-8">Nenhum ingrediente cadastrado ainda.</p>
     {% endif %}
-
-    <p><a href="{{ url_for('admin.painel_admin') }}">Voltar ao Painel Admin</a></p>
+</div>
 {% endblock %}

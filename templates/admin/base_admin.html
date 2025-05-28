@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Painel Administrativo{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-100 text-gray-800;
+        }
+        /* Estilos para mensagens flash */
+        .flash-message {
+            @apply p-3 mb-4 rounded-lg shadow-md flex items-center justify-between;
+        }
+        .flash-success {
+            @apply bg-green-100 text-green-800;
+        }
+        .flash-danger {
+            @apply bg-red-100 text-red-800;
+        }
+        .flash-warning {
+            @apply bg-yellow-100 text-yellow-800;
+        }
+        .flash-info {
+            @apply bg-blue-100 text-blue-800;
+        }
+        .close-button {
+            @apply ml-4 text-lg font-bold cursor-pointer;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="w-64 bg-gray-800 text-white p-6 shadow-lg rounded-r-lg">
+        <h2 class="text-2xl font-bold mb-8 text-center text-indigo-400">Admin Panel</h2>
+        <nav>
+            <ul>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.painel_admin') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Dashboard</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.gerenciar_ingredientes') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Gerenciar Ingredientes</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.gerenciar_condimentos') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Gerenciar Condimentos</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.gerenciar_marmitas') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Gerenciar Marmitas</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.gerenciar_precificacoes') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Gerenciar Precificação</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.gerenciar_estoque') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Gerenciar Estoque</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('admin.gerenciar_pedidos') }}" class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200">Gerenciar Pedidos</a>
+                </li>
+                <li class="mb-4">
+                    <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition duration-200 text-center">Sair</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <h1 class="text-4xl font-extrabold mb-8 text-gray-900 text-center">{% block page_title %}{% endblock %}</h1>
+
+        <div id="flash-messages" class="max-w-4xl mx-auto mb-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <span>{{ message }}</span>
+                            <button class="close-button" onclick="this.parentElement.style.display='none';">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

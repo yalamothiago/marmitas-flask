@@ -1,34 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}Loja de Marmitas{% endblock %}
+{% block title %}Cardápio RedStore{% endblock %}
 
 {% block content %}
-    <h1>Bem-vindo à Loja de Marmitas</h1>
+<h1 class="page-title">Nosso Cardápio</h1> {# Usei page-title para ter um H1 consistente #}
 
-    {% if marmitas %}
-        <ul class="marmitas-list">
-            {% for marmita in marmitas %}
-                <li class="marmita-item"> 
-                    <div class="marmita-info">
-                        <strong>{{ marmita.nome }}</strong> - 
-                        R$ {{ "%.2f"|format(marmita.preco) }}<br>
-                        {% if marmita.descricao %}
-                            <p class="marmita-descricao">{{ marmita.descricao }}</p> 
-                        {% endif %}
-                        <p class="marmita-estoque">Estoque: {{ marmita.quantidade }}</p>
-                    </div>
-                    
-                    <form action="{{ url_for('carrinho.adicionar', marmita_id=marmita.id) }}" method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> {# Certifique-se que o token CSRF está aqui se for um formulário POST #}
-                        <button type="submit" class="add-to-cart-btn"
-                            {% if marmita.quantidade == 0 %}disabled{% endif %}>
-                            {% if marmita.quantidade == 0 %}Esgotado{% else %}Adicionar ao carrinho{% endif %}
-                        </button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+<ul class="marmitas-list"> {# Classe do seu style.css #}
+    {% if marmitas_disponiveis %}
+        {% for item in marmitas_disponiveis %}
+        <li class="marmita-item"> {# Classe do seu style.css #}
+            <div class="marmita-img-container"> {# Adicione um container para a imagem se quiser #}
+                <img src="https://placehold.co/400x250/E0F2FE/0C4A6E?text=Marmita" alt="Marmita {{ item.marmita.nome }}" class="marmita-img"> {# Defina marmita-img no seu CSS #}
+            </div>
+            <div class="marmita-info"> {# Classe do seu style.css #}
+                <strong>{{ item.marmita.nome }}</strong> - 
+                R$ {{ "%.2f"|format(item.valor_de_venda) }}<br>
+                {% if item.marmita.descricao %}
+                    <p class="marmita-descricao">{{ item.marmita.descricao }}</p> {# Classe do seu style.css #}
+                {% endif %}
+                <p class="marmita-estoque">Estoque: {{ item.quantidade_em_estoque }}</p> {# Classe do seu style.css #}
+            </div>
+            
+            <form action="{{ url_for('main.adicionar_ao_carrinho', estoque_id=item.estoque_id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="add-to-cart-btn" {# Classe do seu style.css #}
+                    {% if item.quantidade_em_estoque == 0 %}disabled{% endif %}>
+                    {% if item.quantidade_em_estoque == 0 %}Esgotado{% else %}Adicionar ao carrinho{% endif %}
+                </button>
+            </form>
+        </li>
+        {% endfor %}
     {% else %}
-        <p>Nenhuma marmita disponível no momento.</p>
+        <p class="cart-empty-message">Nenhuma marmita disponível no cardápio no momento.</p> {# Reutilizei a classe de mensagem vazia do carrinho #}
     {% endif %}
+</ul>
 {% endblock %}
