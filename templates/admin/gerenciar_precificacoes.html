@@ -19,7 +19,7 @@
                 <tr>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome da Marmita</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Marmita</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Marmita</th> {# Rótulo ajustado #}
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Valor de Venda</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Margem de Lucro (%)</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Valor do Lucro</th>
@@ -31,7 +31,21 @@
                 <tr class="hover:bg-gray-50 transition duration-150">
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ precificacao.id }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ precificacao.marmita.nome if precificacao.marmita else 'N/A' }}</td>
-                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(precificacao.custo_marmita) if precificacao.custo_marmita is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        {% if precificacao.custo_marmita is not none %}
+                            {% set display_cost = precificacao.custo_marmita %}
+                            {% set display_unit = precificacao.marmita.unidade_medida_producao if precificacao.marmita else 'N/A' %}
+
+                            {# Se a unidade de produção for gramas, converte o custo para R$/kg para exibição #}
+                            {% if precificacao.marmita and precificacao.marmita.unidade_medida_producao == 'g' %}
+                                {% set display_cost = converter_unidade(precificacao.custo_marmita, 'g', 'kg') %}
+                                {% set display_unit = 'kg' %}
+                            {% endif %}
+                            R$ {{ "%.2f"|format(display_cost) }}/{{ display_unit }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(precificacao.valor_de_venda) }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(precificacao.margem_de_lucro_percentual) if precificacao.margem_de_lucro_percentual is not none else 'N/A' }}%</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(precificacao.valor_do_lucro) if precificacao.valor_do_lucro is not none else 'N/A' }}</td>

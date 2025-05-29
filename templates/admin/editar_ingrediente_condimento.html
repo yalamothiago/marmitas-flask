@@ -12,7 +12,7 @@
         <div>
             <label class="block text-sm font-medium text-gray-700">Ingrediente</label>
             <input type="text" value="{{ condimento_item.ingrediente.nome }}" disabled class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed sm:text-sm">
-            </div>
+        </div>
 
         <div>
             {{ form.quantidade_do_ingrediente.label(class="block text-sm font-medium text-gray-700") }}
@@ -21,6 +21,24 @@
                 <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
             {% endfor %}
         </div>
+
+        <div>
+            {{ form.unidade_do_ingrediente_na_receita.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.unidade_do_ingrediente_na_receita(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.unidade_do_ingrediente_na_receita.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        {# NOVO: Exibir o Custo x Quantidade atual para referência na edição #}
+        {% set converted_quantity = converter_unidade(condimento_item.quantidade_do_ingrediente, condimento_item.unidade_do_ingrediente_na_receita, condimento_item.ingrediente.unidade_medida) %}
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Custo x Quantidade Atual (Ref.)</label>
+            <p class="mt-1 text-lg font-semibold text-gray-800">
+                R$ {{ "%.2f"|format(converted_quantity * condimento_item.ingrediente.custo_por_unidade) if converted_quantity is not none and condimento_item.ingrediente and condimento_item.ingrediente.custo_por_unidade is not none else 'N/A' }}
+            </p>
+        </div>
+
 
         <div>
             {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200", value="Atualizar Quantidade") }}

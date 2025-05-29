@@ -19,7 +19,7 @@
                 <tr>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome da Marmita</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Marmita (Ref.)</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Marmita (Ref.)</th> {# Rótulo ajustado #}
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quantidade em Estoque</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
                 </tr>
@@ -28,13 +28,23 @@
                 {% for estoque_item in estoques %}
                 <tr class="hover:bg-gray-50 transition duration-150">
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ estoque_item.id }}</td>
-                    {# CORREÇÃO: Acessar nome via precificacao_referencia #}
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">
                         {{ estoque_item.precificacao_referencia.marmita.nome if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.marmita else 'N/A' }}
                     </td>
-                    {# CORREÇÃO: Acessar custo via precificacao_referencia.custo_marmita #}
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">
-                        R$ {{ "%.2f"|format(estoque_item.precificacao_referencia.custo_marmita) if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.custo_marmita is not none else 'N/A' }}
+                        {% if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.custo_marmita is not none %}
+                            {% set display_cost = estoque_item.precificacao_referencia.custo_marmita %}
+                            {% set display_unit = estoque_item.precificacao_referencia.marmita.unidade_medida_producao if estoque_item.precificacao_referencia.marmita else 'N/A' %}
+
+                            {# Se a unidade de produção for gramas, converte o custo para R$/kg para exibição #}
+                            {% if estoque_item.precificacao_referencia.marmita and estoque_item.precificacao_referencia.marmita.unidade_medida_producao == 'g' %}
+                                {% set display_cost = converter_unidade(estoque_item.precificacao_referencia.custo_marmita, 'g', 'kg') %}
+                                {% set display_unit = 'kg' %}
+                            {% endif %}
+                            R$ {{ "%.2f"|format(display_cost) }}/{{ display_unit }}
+                        {% else %}
+                            N/A
+                        {% endif %}
                     </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ estoque_item.quantidade }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">

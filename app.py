@@ -1,34 +1,24 @@
-# app.py (Revisado para depuração CSRF)
-from flask import Flask, session
-from flask_migrate import Migrate
-from flask_wtf.csrf import CSRFProtect # Mantenha esta importação
-#import os
-
-# NÃO importe load_dotenv e nem tenha prints de SECRET_KEY aqui
-# A SECRET_KEY deve estar FIXA no config.py
+# app.py (Revisado)
 from flask import Flask, session
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
-# REMOVER: from dotenv import load_dotenv
-import os # Manter se usado para algo mais, mas não para SECRET_KEY
+import os
 
 from models import db, Usuario, Carrinho
 from config import Config
-
+from utilities import converter_unidade 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    csrf = CSRFProtect() # Não passe 'app' direto aqui
+    csrf = CSRFProtect()
     csrf.init_app(app)
-
 
     db.init_app(app)
     migrate = Migrate(app, db)
-    # Remova qualquer outra linha csrf = ... se existir
 
-    # Context processor (permanece como está)
+    # Context processor
     @app.context_processor
     def inject_usuario_logado():
         if 'usuario_id' in session:
@@ -39,7 +29,12 @@ def create_app():
                 return dict(usuario_logado=usuario, total_itens_carrinho=total_itens_carrinho)
         return dict(usuario_logado=None, total_itens_carrinho=0)
 
-    # Registro de Blueprints (permanece como está)
+
+    @app.context_processor
+    def inject_utility_functions():
+        return dict(converter_unidade=converter_unidade)
+
+
     from routes.auth import auth_bp
     from routes.admin import admin_bp
     from routes.main import main_bp

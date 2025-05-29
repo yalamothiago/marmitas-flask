@@ -2,7 +2,7 @@
 
 {% block title %}Ajustar Estoque{% endblock %}
 
-{% block page_title %}Ajustar Estoque para: {{ estoque_item.precificacao_referencia.marmita.nome if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.marmita else 'N/A' }}{% endblock %} {# CORREÇÃO: Acessa o nome via precificacao_referencia #}
+{% block page_title %}Ajustar Estoque para: {{ estoque_item.precificacao_referencia.marmita.nome if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.marmita else 'N/A' }}{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
@@ -11,22 +11,31 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700">Marmita</label>
-            {# CORREÇÃO: O campo desabilitado agora exibe o nome via precificacao_referencia #}
             <input type="text" value="{{ estoque_item.precificacao_referencia.marmita.nome if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.marmita else 'N/A' }}" disabled class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed sm:text-sm">
-            {# CORREÇÃO: O campo precificacao_id do formulário é desabilitado e preenchido #}
-            {{ form.precificacao_id(class="hidden") }} {# Campo oculto para garantir que o ID seja enviado #}
+            {{ form.precificacao_id(class="hidden") }}
         </div>
 
-        {# NOVO: Exibir o custo da marmita para referência #}
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Custo Unitário da Marmita (Ref.)</label>
             <p class="mt-1 text-lg font-semibold text-gray-800">
-                R$ {{ "%.2f"|format(estoque_item.precificacao_referencia.custo_marmita) if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.custo_marmita is not none else 'N/A' }}
+                {% if estoque_item.precificacao_referencia and estoque_item.precificacao_referencia.custo_marmita is not none %}
+                    {% set display_cost = estoque_item.precificacao_referencia.custo_marmita %}
+                    {% set display_unit = estoque_item.precificacao_referencia.marmita.unidade_medida_producao if estoque_item.precificacao_referencia.marmita else 'N/A' %}
+
+                    {# Se a unidade de produção for gramas, converte o custo para R$/kg para exibição #}
+                    {% if estoque_item.precificacao_referencia.marmita and estoque_item.precificacao_referencia.marmita.unidade_medida_producao == 'g' %}
+                        {% set display_cost = converter_unidade(estoque_item.precificacao_referencia.custo_marmita, 'g', 'kg') %}
+                        {% set display_unit = 'kg' %}
+                    {% endif %}
+                    R$ {{ "%.2f"|format(display_cost) }}/{{ display_unit }}
+                {% else %}
+                    N/A
+                {% endif %}
             </p>
         </div>
 
         <div>
-            {{ form.quantidade.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.quantidade.label(class_="block text-sm font-medium text-gray-700") }}
             {{ form.quantidade(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm") }}
             {% for error in form.quantidade.errors %}
                 <p class="mt-1 text-red-500 text-xs">{{ error }}</p>

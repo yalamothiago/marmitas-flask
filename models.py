@@ -50,6 +50,7 @@ class CondimentoItem(db.Model):
     condimento_id = db.Column(db.Integer, db.ForeignKey('condimento.id'), nullable=False)
     ingrediente_id = db.Column(db.Integer, db.ForeignKey('ingrediente.id'), nullable=False)
     quantidade_do_ingrediente = db.Column(db.Float, nullable=False)
+    unidade_do_ingrediente_na_receita = db.Column(db.String(50), nullable=True)
 
     condimento = db.relationship('Condimento', back_populates='itens')
     ingrediente = db.relationship('Ingrediente', back_populates='condimento_items')
@@ -64,19 +65,14 @@ class Marmita(db.Model):
     nome = db.Column(db.String(80), nullable=False)
     descricao = db.Column(db.String(500), nullable=True)
     rendimento_receita = db.Column(db.Float, nullable=True)
+    unidade_medida_producao = db.Column(db.String(50), nullable=True)
     custo_unitario_producao = db.Column(db.Float, nullable=True)
 
     condimento_itens = db.relationship('MarmitaCondimento', back_populates='marmita', cascade='all, delete-orphan', lazy=True)
 
     precificacao = db.relationship('Precificacao', back_populates='marmita', uselist=False, cascade='all, delete-orphan')
 
-    # Removido o relacionamento direto com Estoque, pois Estoque agora se relaciona com Precificacao
-    # estoque = db.relationship('Estoque', back_populates='marmita', uselist=False, cascade='all, delete-orphan')
 
-    # Removido o relacionamento direto com Pedido, pois Pedido agora se relaciona com Estoque
-    # pedidos = db.relationship('Pedido', back_populates='marmita_escolhida', lazy=True)
-
-    # VendaItem e CarrinhoItem ainda se relacionam com Marmita (a receita)
     venda_itens = db.relationship('VendaItem', back_populates='marmita', cascade='all, delete-orphan', lazy=True)
     producoes = db.relationship('ProducaoMarmita', back_populates='marmita', lazy=True, cascade='all, delete-orphan')
     carrinho_itens = db.relationship('CarrinhoItem', back_populates='marmita', cascade='all, delete-orphan', lazy=True)
@@ -87,6 +83,7 @@ class MarmitaCondimento(db.Model):
     marmita_id = db.Column(db.Integer, db.ForeignKey('marmita.id'), nullable=False)
     condimento_id = db.Column(db.Integer, db.ForeignKey('condimento.id'), nullable=False)
     quantidade_do_condimento = db.Column(db.Float, nullable=False)
+    unidade_do_condimento_na_marmita = db.Column(db.String(50), nullable=True)
 
     marmita = db.relationship('Marmita', back_populates='condimento_itens')
     condimento = db.relationship('Condimento', back_populates='marmita_condimentos')

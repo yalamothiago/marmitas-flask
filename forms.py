@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, FloatField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, NumberRange, ValidationError, Length
-# Importe todos os modelos necessários para os SelectFields
-# Importamos Precificacao e Estoque para popular choices
 from models import Usuario, Ingrediente, Condimento, Marmita, Precificacao, Estoque
 
 
@@ -31,11 +29,17 @@ class IngredienteForm(FlaskForm):
     nome = StringField('Nome do Ingrediente', validators=[DataRequired()])
     quantidade_comprada = FloatField('Quantidade Comprada', validators=[DataRequired(), NumberRange(min=0.01)])
     unidade_medida = SelectField('Unidade de Medida', choices=[
+        # Massa
         ('kg', 'Quilogramas (kg)'),
         ('g', 'Gramas (g)'),
+        ('mg', 'Miligramas (mg)'),
+        # Volume
         ('L', 'Litros (L)'),
         ('ml', 'Mililitros (ml)'),
-        ('un', 'Unidades (un)')
+        # Contagem/Unidades
+        ('un', 'Unidades (un)'),
+        ('dz', 'Dúzia (dz)'),
+        ('pct', 'Pacote (pct)')
     ], validators=[DataRequired()])
     total_pago = FloatField('Total Pago', validators=[DataRequired(), NumberRange(min=0.01)])
     submit = SubmitField('Adicionar Ingrediente')
@@ -50,11 +54,18 @@ class CondimentoForm(FlaskForm):
     nome = StringField('Nome do Condimento', validators=[DataRequired()])
     rendimento = FloatField('Rendimento Total (na unidade selecionada)', validators=[DataRequired(), NumberRange(min=0.01)])
     unidade_medida_rendimento = SelectField('Unidade de Medida do Rendimento', choices=[
+        # Massa
         ('kg', 'Quilogramas (kg)'),
         ('g', 'Gramas (g)'),
+        ('mg', 'Miligramas (mg)'),
+        # Volume
         ('L', 'Litros (L)'),
         ('ml', 'Mililitros (ml)'),
-        ('porcao', 'Porções (porcao)')
+        # Contagem/Porções
+        ('un', 'Unidades (un)'),
+        ('porcao', 'Porções (porcao)'), # Condimentos podem render em porções
+        ('dz', 'Dúzia (dz)'),
+        ('pct', 'Pacote (pct)')
     ], validators=[DataRequired()])
     submit = SubmitField('Adicionar Condimento')
 
@@ -63,44 +74,80 @@ class CondimentoForm(FlaskForm):
         if condimento:
             raise ValidationError('Este condimento já existe.')
 
-# NOVO: Formulário para adicionar Ingredientes a um Condimento (CondimentoItem)
+
 class CondimentoItemForm(FlaskForm):
-    # O choices será preenchido dinamicamente na rota
     ingrediente_id = SelectField('Ingrediente', coerce=int, validators=[DataRequired()])
+    # A unidade aqui é a unidade em que você adiciona o ingrediente ao condimento
+    # Se você está usando 500g de frango, a unidade é 'g'
     quantidade_do_ingrediente = FloatField('Quantidade do Ingrediente', validators=[DataRequired(), NumberRange(min=0.01)])
+    unidade_do_ingrediente_na_receita = SelectField('Unidade na Receita', choices=[
+        # Massa
+        ('kg', 'Quilogramas (kg)'),
+        ('g', 'Gramas (g)'),
+        ('mg', 'Miligramas (mg)'),
+        # Volume
+        ('L', 'Litros (L)'),
+        ('ml', 'Mililitros (ml)'),
+        # Contagem/Unidades
+        ('un', 'Unidades (un)'),
+        ('dz', 'Dúzia (dz)'),
+        ('pct', 'Pacote (pct)')
+    ], validators=[DataRequired()])
     submit = SubmitField('Adicionar Ingrediente ao Condimento')
 
-# Formulário para Marmitas (Receitas) - Ajustado
+
 class MarmitaForm(FlaskForm):
     nome = StringField('Nome da Marmita', validators=[DataRequired()])
     descricao = TextAreaField('Descrição', validators=[DataRequired()])
-    rendimento_receita = FloatField('Rendimento da Receita (em porções)', validators=[DataRequired(), NumberRange(min=0.01)])
+    rendimento_receita = FloatField('Rendimento da Receita', validators=[DataRequired(), NumberRange(min=0.01)])
+ 
+    unidade_medida_producao = SelectField('Unidade de Medida do Rendimento', choices=[
+        ('porcao', 'Porção (porcao)'), 
+        ('un', 'Unidade (un)'),
+        # Massa
+        ('kg', 'Quilogramas (kg)'),
+        ('g', 'Gramas (g)'),
+        ('mg', 'Miligramas (mg)'),
+        # Volume
+        ('L', 'Litros (L)'),
+        ('ml', 'Mililitros (ml)'),
+    ], validators=[DataRequired()])
     submit = SubmitField('Adicionar Marmita')
 
-# NOVO: Formulário para associar Condimentos a uma Marmita (MarmitaCondimento)
 class MarmitaCondimentoForm(FlaskForm):
-    # O choices será preenchido dinamicamente na rota
     condimento_id = SelectField('Condimento', coerce=int, validators=[DataRequired()])
     quantidade_do_condimento = FloatField('Quantidade do Condimento', validators=[DataRequired(), NumberRange(min=0.01)])
+    unidade_do_condimento_na_marmita = SelectField('Unidade na Marmita', choices=[
+        # Massa
+        ('kg', 'Quilogramas (kg)'),
+        ('g', 'Gramas (g)'),
+        ('mg', 'Miligramas (mg)'),
+        # Volume
+        ('L', 'Litros (L)'),
+        ('ml', 'Mililitros (ml)'),
+        # Contagem/Unidades
+        ('un', 'Unidades (un)'),
+        ('dz', 'Dúzia (dz)'),
+        ('pct', 'Pacote (pct)'),
+        ('porcao', 'Porção (porcao)') # Se um condimento pode ser usado em porções na marmita
+    ], validators=[DataRequired()])
     submit = SubmitField('Associar Condimento à Marmita')
 
-# NOVO: Formulário para Precificação
-class PrecificacaoForm(FlaskForm):
-    # O choices será preenchido dinamicamente na rota com as marmitas disponíveis
+
+class PrecificacaoForm(FlaskForm):  
     marmita_id = SelectField('Marmita', coerce=int, validators=[DataRequired()])
     valor_de_venda = FloatField('Valor de Venda', validators=[DataRequired(), NumberRange(min=0.01)])
     submit = SubmitField('Definir Precificação')
 
     def validate_marmita_id(self, marmita_id):
-        # Valida se já existe uma precificação para esta marmita
+       
         precificacao_existente = Precificacao.query.filter_by(marmita_id=marmita_id.data).first()
         if precificacao_existente:
             raise ValidationError('Já existe uma precificação para esta marmita. Por favor, edite a existente.')
 
-# NOVO: Formulário para Estoque (Produção) - AJUSTADO
+
 class EstoqueForm(FlaskForm):
-    # O choices será preenchido dinamicamente na rota com as PRECIFICAÇÕES disponíveis
-    # Agora selecionamos a precificação diretamente para o estoque
+
     precificacao_id = SelectField('Marmita Precificada', coerce=int, validators=[DataRequired()])
     quantidade = IntegerField('Quantidade a Produzir', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Produzir para Estoque')
@@ -112,19 +159,17 @@ class EstoqueForm(FlaskForm):
             raise ValidationError('Já existe um registro de estoque para esta precificação. Por favor, ajuste a quantidade no estoque existente.')
 
 
-# NOVO: Formulário para Pedidos - AJUSTADO
 class PedidoForm(FlaskForm):
     nome_cliente = StringField('Nome do Cliente', validators=[DataRequired(), Length(min=2, max=100)])
     email_cliente = StringField('Email do Cliente', validators=[Email(message='Email inválido.'), Length(max=120)])
     contato_cliente = StringField('Contato do Cliente', validators=[Length(max=50)])
-    # O choices será preenchido dinamicamente na rota com os ITENS EM ESTOQUE disponíveis
-    # Agora selecionamos um item de estoque diretamente para o pedido
+  
     estoque_id = SelectField('Marmita em Estoque', coerce=int, validators=[DataRequired()])
     quantidade_marmita_id = IntegerField('Quantidade', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Registrar Pedido')
 
     def validate_quantidade_marmita_id(self, quantidade_marmita_id):
-        # Validação para garantir que há estoque suficiente
+     
         estoque_id_selecionado = self.estoque_id.data
         if estoque_id_selecionado:
             estoque_item = Estoque.query.filter_by(id=estoque_id_selecionado).first()

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, session
 from models import db, Marmita, Usuario, Ingrediente, Condimento, CondimentoItem, MarmitaCondimento, ProducaoMarmita, Precificacao, Estoque, Pedido # Importe todos os modelos
 from forms import IngredienteForm, CondimentoForm, MarmitaForm, CondimentoItemForm, MarmitaCondimentoForm, PrecificacaoForm, EstoqueForm, PedidoForm # Importe todos os formulários
-from utilities import calcular_custo_unitario_ingrediente, calcular_custo_condimento, calcular_custo_unitario_marmita_receita, calcular_precificacao, atualizar_estoque_apos_producao, processar_pedido # Importe as funções de cálculo atualizadas
+from utilities import calcular_custo_unitario_ingrediente, calcular_custo_condimento, calcular_custo_unitario_marmita_receita, calcular_precificacao, atualizar_estoque_apos_producao, processar_pedido, consumir_ingredientes_para_marmita # Importe as funções de cálculo atualizadas
 from functools import wraps
 
 admin_bp = Blueprint('admin', __name__)
@@ -145,28 +145,24 @@ def adicionar_condimento():
 @admin_bp.route('/condimento/<int:condimento_id>/adicionar_ingrediente', methods=['GET', 'POST'])
 @login_admin_required
 def adicionar_ingrediente_a_condimento(condimento_id):
-    """
-    Permite adicionar ingredientes a um condimento específico.
-    """
     condimento = db.session.get(Condimento, condimento_id)
     if not condimento:
         flash("Condimento não encontrado.", "danger")
         return redirect(url_for('admin.gerenciar_condimentos'))
 
     form = CondimentoItemForm()
-    # Popula as opções do SelectField de ingredientes
     form.ingrediente_id.choices = [(i.id, i.nome) for i in Ingrediente.query.all()]
 
     if form.validate_on_submit():
         ingrediente_id = form.ingrediente_id.data
         quantidade_do_ingrediente = form.quantidade_do_ingrediente.data
+        unidade_do_ingrediente_na_receita = form.unidade_do_ingrediente_na_receita.data # <--- NOVO
 
         ingrediente = db.session.get(Ingrediente, ingrediente_id)
         if not ingrediente:
             flash("Ingrediente selecionado não encontrado.", "danger")
             return redirect(url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento_id))
 
-        # Verifica se já existe um CondimentoItem para evitar duplicatas
         condimento_item_existente = CondimentoItem.query.filter_by(
             condimento_id=condimento.id, ingrediente_id=ingrediente.id).first()
 
@@ -176,14 +172,14 @@ def adicionar_ingrediente_a_condimento(condimento_id):
             condimento_item = CondimentoItem(
                 condimento_id=condimento.id,
                 ingrediente_id=ingrediente.id,
-                quantidade_do_ingrediente=quantidade_do_ingrediente
+                quantidade_do_ingrediente=quantidade_do_ingrediente,
+                unidade_do_ingrediente_na_receita=unidade_do_ingrediente_na_receita 
             )
             db.session.add(condimento_item)
-            db.session.commit() # Commit para salvar o CondimentoItem
+            db.session.commit()
 
-            # Recalcula o custo total e unitário do condimento
             calcular_custo_condimento(condimento)
-            db.session.commit() # Salva os custos atualizados do condimento
+            db.session.commit()
 
             flash(f'Ingrediente {ingrediente.nome} adicionado ao condimento {condimento.nome}.', 'success')
 
@@ -200,7 +196,7 @@ def adicionar_ingrediente_a_condimento(condimento_id):
 @login_admin_required
 def editar_ingrediente_condimento(condimento_id, item_id):
     """
-    Permite editar a quantidade de um ingrediente em um condimento.
+    Permite editar a quantidade e a unidade de um ingrediente em um condimento.
     """
     condimento = db.session.get(Condimento, condimento_id)
     condimento_item = db.session.get(CondimentoItem, item_id)
@@ -210,18 +206,27 @@ def editar_ingrediente_condimento(condimento_id, item_id):
         return redirect(url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento_id))
 
     form = CondimentoItemForm(obj=condimento_item)
-    form.ingrediente_id.choices = [(condimento_item.ingrediente.id, condimento_item.ingrediente.nome)] # Apenas o ingrediente atual
+    
+    # Popula as opções do SelectField de ingredientes (o ingrediente em si não muda)
+    form.ingrediente_id.choices = [(condimento_item.ingrediente.id, condimento_item.ingrediente.nome)]
     form.ingrediente_id.render_kw = {'disabled': 'disabled'} # Desabilita o campo no HTML
 
     if form.validate_on_submit():
+        # Apenas a quantidade e a unidade na receita podem ser alteradas
         condimento_item.quantidade_do_ingrediente = form.quantidade_do_ingrediente.data
+        condimento_item.unidade_do_ingrediente_na_receita = form.unidade_do_ingrediente_na_receita.data # <--- NOVO: Salva a unidade da receita
+
         db.session.commit()
 
         calcular_custo_condimento(condimento) # Recalcula o custo do condimento
         db.session.commit()
 
-        flash('Quantidade do ingrediente atualizada com sucesso!', 'success')
+        flash('Quantidade e unidade do ingrediente atualizadas com sucesso!', 'success')
         return redirect(url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento_id))
+
+    # Garante que o campo de unidade na receita esteja pré-selecionado ao carregar o formulário
+    if request.method == 'GET':
+        form.unidade_do_ingrediente_na_receita.data = condimento_item.unidade_do_ingrediente_na_receita
 
     return render_template('admin/editar_ingrediente_condimento.html', form=form, condimento=condimento, condimento_item=condimento_item)
 
@@ -306,10 +311,11 @@ def adicionar_marmita():
         nova_marmita = Marmita(
             nome=form.nome.data,
             descricao=form.descricao.data,
-            rendimento_receita=form.rendimento_receita.data
+            rendimento_receita=form.rendimento_receita.data,
+            unidade_medida_producao=form.unidade_medida_producao.data # <--- NOVO
         )
         db.session.add(nova_marmita)
-        db.session.commit() # Commit inicial para ter ID
+        db.session.commit()
 
         flash('Marmita adicionada com sucesso! Agora associe os condimentos a ela.', 'info')
         return redirect(url_for('admin.associar_condimento_a_marmita', marmita_id=nova_marmita.id))
@@ -328,19 +334,18 @@ def associar_condimento_a_marmita(marmita_id):
         return redirect(url_for('admin.gerenciar_marmitas'))
 
     form = MarmitaCondimentoForm()
-    # Popula as opções do SelectField de condimentos
     form.condimento_id.choices = [(c.id, c.nome) for c in Condimento.query.all()]
 
     if form.validate_on_submit():
         condimento_id = form.condimento_id.data
         quantidade_do_condimento = form.quantidade_do_condimento.data
+        unidade_do_condimento_na_marmita = form.unidade_do_condimento_na_marmita.data # <--- NOVO
 
         condimento = db.session.get(Condimento, condimento_id)
         if not condimento:
             flash("Condimento selecionado não encontrado.", "danger")
             return redirect(url_for('admin.associar_condimento_a_marmita', marmita_id=marmita_id))
 
-        # Verifica se já existe um MarmitaCondimento para evitar duplicatas
         marmita_condimento_existente = MarmitaCondimento.query.filter_by(
             marmita_id=marmita.id, condimento_id=condimento.id).first()
 
@@ -350,14 +355,14 @@ def associar_condimento_a_marmita(marmita_id):
             marmita_condimento = MarmitaCondimento(
                 marmita_id=marmita.id,
                 condimento_id=condimento.id,
-                quantidade_do_condimento=quantidade_do_condimento
+                quantidade_do_condimento=quantidade_do_condimento,
+                unidade_do_condimento_na_marmita=unidade_do_condimento_na_marmita # <--- NOVO
             )
             db.session.add(marmita_condimento)
-            db.session.commit() # Commit para salvar o MarmitaCondimento
+            db.session.commit()
 
-            # Recalcula o custo unitário da marmita
             calcular_custo_unitario_marmita_receita(marmita)
-            db.session.commit() # Salva o custo unitário atualizado da marmita
+            db.session.commit()
 
             flash(f'Condimento {condimento.nome} associado à marmita {marmita.nome}.', 'success')
 
@@ -374,7 +379,7 @@ def associar_condimento_a_marmita(marmita_id):
 @login_admin_required
 def editar_condimento_marmita(marmita_id, item_id):
     """
-    Permite editar a quantidade de um condimento em uma marmita.
+    Permite editar a quantidade e a unidade de um condimento em uma marmita.
     """
     marmita = db.session.get(Marmita, marmita_id)
     marmita_condimento = db.session.get(MarmitaCondimento, item_id)
@@ -384,18 +389,24 @@ def editar_condimento_marmita(marmita_id, item_id):
         return redirect(url_for('admin.associar_condimento_a_marmita', marmita_id=marmita_id))
 
     form = MarmitaCondimentoForm(obj=marmita_condimento)
-    form.condimento_id.choices = [(marmita_condimento.condimento.id, marmita_condimento.condimento.nome)] # Apenas o condimento atual
-    form.condimento_id.render_kw = {'disabled': 'disabled'} # Desabilita o campo no HTML
+    form.condimento_id.choices = [(marmita_condimento.condimento.id, marmita_condimento.condimento.nome)]
+    form.condimento_id.render_kw = {'disabled': 'disabled'}
 
     if form.validate_on_submit():
         marmita_condimento.quantidade_do_condimento = form.quantidade_do_condimento.data
+        marmita_condimento.unidade_do_condimento_na_marmita = form.unidade_do_condimento_na_marmita.data # <--- NOVO
+
         db.session.commit()
 
-        calcular_custo_unitario_marmita_receita(marmita) # Recalcula o custo da marmita
+        calcular_custo_unitario_marmita_receita(marmita)
         db.session.commit()
 
-        flash('Quantidade do condimento na marmita atualizada com sucesso!', 'success')
+        flash('Quantidade e unidade do condimento na marmita atualizadas com sucesso!', 'success')
         return redirect(url_for('admin.associar_condimento_a_marmita', marmita_id=marmita_id))
+    
+    # Garante que o campo de unidade na receita esteja pré-selecionado ao carregar o formulário
+    if request.method == 'GET':
+        form.unidade_do_condimento_na_marmita.data = marmita_condimento.unidade_do_condimento_na_marmita
 
     return render_template('admin/editar_condimento_marmita.html', form=form, marmita=marmita, marmita_condimento=marmita_condimento)
 
@@ -434,9 +445,13 @@ def editar_marmita(marmita_id):
 
     form = MarmitaForm(obj=marmita)
     if form.validate_on_submit():
-        form.populate_obj(marmita)
+        marmita.nome = form.nome.data
+        marmita.descricao = form.descricao.data
+        marmita.rendimento_receita = form.rendimento_receita.data
+        marmita.unidade_medida_producao = form.unidade_medida_producao.data # <--- NOVO
+
         db.session.commit()
-        calcular_custo_unitario_marmita_receita(marmita) # Recalcula o custo, caso rendimento mude
+        calcular_custo_unitario_marmita_receita(marmita)
         db.session.commit()
         flash('Marmita atualizada com sucesso!', 'success')
         return redirect(url_for('admin.gerenciar_marmitas'))
@@ -563,11 +578,9 @@ def gerenciar_estoque():
 @login_admin_required
 def produzir_marmitas_estoque():
     """
-    Permite produzir marmitas e adicionar ao estoque.
+    Permite produzir marmitas e adicionar ao estoque, consumindo ingredientes.
     """
     form = EstoqueForm()
-    # Popula as opções do SelectField com marmitas que possuem precificação
-    # Agora usamos precificacao.id e precificacao.marmita.nome
     marmitas_precificadas = Precificacao.query.all()
     form.precificacao_id.choices = [(p.id, f"{p.marmita.nome} (Custo: R${p.custo_marmita:.2f}, Venda: R${p.valor_de_venda:.2f})") for p in marmitas_precificadas if p.marmita]
 
@@ -580,37 +593,55 @@ def produzir_marmitas_estoque():
             flash("Precificação não encontrada.", "danger")
             return redirect(url_for('admin.produzir_marmitas_estoque'))
 
-        # Atualizar o estoque existente ou criar um novo registro de estoque
-        estoque_item = Estoque.query.filter_by(precificacao_id=precificacao_id).first()
+        marmita_receita = precificacao.marmita
+        if not marmita_receita:
+            flash("Receita da marmita não encontrada para a precificação selecionada.", "danger")
+            return redirect(url_for('admin.produzir_marmitas_estoque'))
 
-        if estoque_item:
-            # Se o item de estoque já existe, apenas atualiza a quantidade
-            atualizar_estoque_apos_producao(estoque_item, quantidade_produzida)
-            flash(f'Estoque de {precificacao.marmita.nome} atualizado. Quantidade: {estoque_item.quantidade}.', 'success')
-        else:
-            # Se o item de estoque não existe, cria um novo
-            novo_estoque = Estoque(
-                precificacao_id=precificacao_id,
-                quantidade=0 # Inicializa com 0, a função de atualização vai adicionar
-            )
-            db.session.add(novo_estoque)
-            db.session.commit() # Commit para ter ID
+        try:
+            with db.session.begin_nested(): # Inicia uma transação para garantir atomicidade
 
-            atualizar_estoque_apos_producao(novo_estoque, quantidade_produzida)
-            flash(f'Estoque inicial para {precificacao.marmita.nome} criado. Quantidade: {novo_estoque.quantidade}.', 'success')
+                # 1. Consumir ingredientes antes de produzir a marmita
+                sucesso_consumo, mensagem_consumo = consumir_ingredientes_para_marmita(marmita_receita, quantidade_produzida)
+                
+                if not sucesso_consumo:
+                    # Se o consumo falhar (ex: estoque insuficiente), reverte tudo
+                    db.session.rollback()
+                    flash(f"Falha na produção: {mensagem_consumo}", "danger")
+                    return redirect(url_for('admin.produzir_marmitas_estoque'))
 
-        db.session.commit() # Salva as alterações no estoque
+                # 2. Atualizar o estoque da marmita
+                estoque_item = Estoque.query.filter_by(precificacao_id=precificacao_id).first()
 
-        # Opcional: Registrar a produção na tabela ProducaoMarmita
-        producao = ProducaoMarmita(
-            marmita_id=precificacao.marmita.id, # Usa o ID da marmita da precificação
-            quantidade_produzida=quantidade_produzida,
-            # Custo de produção total = custo unitário da receita * quantidade produzida
-            custo_producao_total=precificacao.marmita.custo_unitario_producao * quantidade_produzida
-        )
-        db.session.add(producao)
-        db.session.commit()
+                if estoque_item:
+                    atualizar_estoque_apos_producao(estoque_item, quantidade_produzida)
+                    flash(f'Estoque de {precificacao.marmita.nome} atualizado. Quantidade: {estoque_item.quantidade}.', 'success')
+                else:
+                    novo_estoque = Estoque(
+                        precificacao_id=precificacao_id,
+                        quantidade=0
+                    )
+                    db.session.add(novo_estoque)
+                    db.session.flush() # Para ter o ID
+                    atualizar_estoque_apos_producao(novo_estoque, quantidade_produzida)
+                    flash(f'Estoque inicial para {precificacao.marmita.nome} criado. Quantidade: {novo_estoque.quantidade}.', 'success')
 
+                # 3. Registrar a produção
+                producao = ProducaoMarmita(
+                    marmita_id=marmita_receita.id,
+                    quantidade_produzida=quantidade_produzida,
+                    custo_producao_total=precificacao.marmita.custo_unitario_producao * quantidade_produzida
+                )
+                db.session.add(producao)
+
+                db.session.commit() # Confirma todas as alterações (consumo e produção)
+                flash(f'Marmitas produzidas com sucesso! {mensagem_consumo}', 'success')
+
+        except Exception as e:
+            db.session.rollback() # Reverte TUDO em caso de qualquer erro
+            print(f"Erro ao produzir marmitas: {e}")
+            flash(f"Ocorreu um erro ao produzir marmitas: {e}", "danger")
+        
         return redirect(url_for('admin.gerenciar_estoque'))
     return render_template('admin/produzir_marmitas_estoque.html', form=form)
 
@@ -629,7 +660,7 @@ def ajustar_estoque(estoque_id):
     # A precificacao_id não deve ser alterável para um item de estoque existente
     form.precificacao_id.choices = [(estoque_item.precificacao_referencia.id, estoque_item.precificacao_referencia.marmita.nome)]
     form.precificacao_id.render_kw = {'disabled': 'disabled'} # Desabilita o campo no HTML
-    form.quantidade.label = 'Nova Quantidade em Estoque' # Altera o rótulo para indicar ajuste
+    form.quantidade.label.text = 'Nova Quantidade em Estoque'
 
     if form.validate_on_submit():
         nova_quantidade = form.quantidade.data

@@ -26,6 +26,15 @@
             {% endfor %}
         </div>
 
+        {# NOVO CAMPO: Unidade do Condimento na Marmita #}
+        <div>
+            {{ form.unidade_do_condimento_na_marmita.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.unidade_do_condimento_na_marmita(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.unidade_do_condimento_na_marmita.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
         <div>
             {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200") }}
         </div>
@@ -38,7 +47,8 @@
             <thead class="bg-gray-100">
                 <tr>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Condimento</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quantidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quant. na Marmita</th> {# Rótulo ajustado #}
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unid. na Marmita</th> {# NOVO: Cabeçalho #}
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário Condimento</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo x Quantidade</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
@@ -49,13 +59,17 @@
                 <tr class="hover:bg-gray-50 transition duration-150">
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ item.condimento.nome if item.condimento else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(item.quantidade_do_condimento) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ item.unidade_do_condimento_na_marmita if item.unidade_do_condimento_na_marmita else 'N/A' }}</td> {# NOVO: Exibir a unidade na marmita #}
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(item.condimento.custo_unitario) if item.condimento and item.condimento.custo_unitario is not none else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">
-                        R$ {{ "%.2f"|format(item.quantidade_do_condimento * item.condimento.custo_unitario) if item.condimento and item.condimento.custo_unitario is not none else 'N/A' }}
+                        {# Calcular Custo x Quantidade usando converter_unidade no template #}
+                        {% set converted_quantity = converter_unidade(item.quantidade_do_condimento, item.unidade_do_condimento_na_marmita, item.condimento.unidade_medida_rendimento) %}
+                        R$ {{ "%.2f"|format(converted_quantity * item.condimento.custo_unitario) if converted_quantity is not none and item.condimento and item.condimento.custo_unitario is not none else 'N/A' }}
                     </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
                         <a href="{{ url_for('admin.editar_condimento_marmita', marmita_id=marmita.id, item_id=item.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
                         <form action="{{ url_for('admin.deletar_condimento_marmita', marmita_id=marmita.id, item_id=item.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este condimento da marmita?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Remover</button>
                         </form>
                     </td>

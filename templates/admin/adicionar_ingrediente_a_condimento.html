@@ -27,6 +27,14 @@
         </div>
 
         <div>
+            {{ form.unidade_do_ingrediente_na_receita.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.unidade_do_ingrediente_na_receita(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+            {% for error in form.unidade_do_ingrediente_na_receita.errors %}
+                <p class="mt-1 text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
             {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200") }}
         </div>
     </form>
@@ -38,7 +46,8 @@
             <thead class="bg-gray-100">
                 <tr>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ingrediente</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quantidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quant. na Receita</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unid. na Receita</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo p/ Unidade Ingrediente</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo x Quantidade</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
@@ -49,13 +58,17 @@
                 <tr class="hover:bg-gray-50 transition duration-150">
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ item.ingrediente.nome if item.ingrediente else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(item.quantidade_do_ingrediente) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ item.unidade_do_ingrediente_na_receita if item.unidade_do_ingrediente_na_receita else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(item.ingrediente.custo_por_unidade) if item.ingrediente and item.ingrediente.custo_por_unidade is not none else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">
-                        R$ {{ "%.2f"|format(item.quantidade_do_ingrediente * item.ingrediente.custo_por_unidade) if item.ingrediente and item.ingrediente.custo_por_unidade is not none else 'N/A' }}
+                        {# CORREÇÃO AQUI: Calcular Custo x Quantidade usando converter_unidade no template #}
+                        {% set converted_quantity = converter_unidade(item.quantidade_do_ingrediente, item.unidade_do_ingrediente_na_receita, item.ingrediente.unidade_medida) %}
+                        R$ {{ "%.2f"|format(converted_quantity * item.ingrediente.custo_por_unidade) if converted_quantity is not none and item.ingrediente and item.ingrediente.custo_por_unidade is not none else 'N/A' }}
                     </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
                         <a href="{{ url_for('admin.editar_ingrediente_condimento', condimento_id=condimento.id, item_id=item.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
                         <form action="{{ url_for('admin.deletar_ingrediente_condimento', condimento_id=condimento.id, item_id=item.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este ingrediente do condimento?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Remover</button>
                         </form>
                     </td>

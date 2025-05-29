@@ -22,7 +22,7 @@
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Total</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Rendimento</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unidade Rend.</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário</th> {# Rótulo ajustado #}
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
                 </tr>
             </thead>
@@ -34,7 +34,21 @@
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(condimento.custo_total) if condimento.custo_total is not none else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(condimento.rendimento) if condimento.rendimento is not none else 'N/A' }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ condimento.unidade_medida_rendimento if condimento.unidade_medida_rendimento is not none else 'N/A' }}</td>
-                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(condimento.custo_unitario) if condimento.custo_unitario is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        {% if condimento.custo_unitario is not none %}
+                            {% set display_cost = condimento.custo_unitario %}
+                            {% set display_unit = condimento.unidade_medida_rendimento %}
+
+                            {# Se a unidade de rendimento for gramas, converte o custo para R$/kg para exibição #}
+                            {% if condimento.unidade_medida_rendimento == 'g' %}
+                                {% set display_cost = converter_unidade(condimento.custo_unitario, 'g', 'kg') %}
+                                {% set display_unit = 'kg' %}
+                            {% endif %}
+                            R$ {{ "%.2f"|format(display_cost) }}/{{ display_unit }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
                         <a href="{{ url_for('admin.adicionar_ingrediente_a_condimento', condimento_id=condimento.id) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Ingredientes</a>
                         <a href="{{ url_for('admin.editar_condimento', condimento_id=condimento.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>

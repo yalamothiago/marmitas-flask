@@ -1,5 +1,6 @@
 import logging
 from logging.config import fileConfig
+import os # Importar o módulo os
 
 from flask import current_app
 
@@ -10,9 +11,21 @@ from alembic import context
 config = context.config
 
 # Interpret the config file for Python logging.
-# This line sets up loggers basically.
-fileConfig(config.config_file_name)
-logger = logging.getLogger('alembic.env')
+# FIX: Garante que o alembic.ini seja encontrado para a configuração de log.
+# O config.config_file_name pode ser um caminho relativo ao script env.py,
+# mas o alembic.ini está na raiz do projeto (um diretório acima).
+alembic_ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'alembic.ini'))
+
+if os.path.exists(alembic_ini_path):
+    fileConfig(alembic_ini_path)
+    logger = logging.getLogger('alembic.env')
+else:
+    # Se, por algum motivo, o alembic.ini não estiver no local esperado,
+    # ele voltará para o comportamento padrão (que causou o erro FileNotFoundError).
+    # Este 'else' é mais uma medida de segurança para depuração.
+    fileConfig(config.config_file_name)
+    logger = logging.getLogger('alembic.env')
+    logger.warning("alembic.ini não encontrado no diretório pai de migrations. Voltando para o local padrão de configuração.")
 
 
 def get_engine():
@@ -111,3 +124,4 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+

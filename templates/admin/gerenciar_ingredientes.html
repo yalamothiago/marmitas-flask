@@ -22,7 +22,7 @@
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Quant. Comprada</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unidade</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Total Pago</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo p/ Unidade</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo p/ Unidade</th> {# Rótulo ajustado #}
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
                 </tr>
             </thead>
@@ -34,7 +34,21 @@
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(ingrediente.quantidade_comprada) }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ ingrediente.unidade_medida }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(ingrediente.total_pago) }}</td>
-                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(ingrediente.custo_por_unidade) }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        {% if ingrediente.custo_por_unidade is not none %}
+                            {% set display_cost = ingrediente.custo_por_unidade %}
+                            {% set display_unit = ingrediente.unidade_medida %}
+
+                            {# Se a unidade do ingrediente for gramas, converte o custo para R$/kg para exibição #}
+                            {% if ingrediente.unidade_medida == 'g' %}
+                                {% set display_cost = converter_unidade(ingrediente.custo_por_unidade, 'g', 'kg') %}
+                                {% set display_unit = 'kg' %}
+                            {% endif %}
+                            R$ {{ "%.2f"|format(display_cost) }}/{{ display_unit }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
                         <a href="{{ url_for('admin.editar_ingrediente', ingrediente_id=ingrediente.id) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
                         <form action="{{ url_for('admin.deletar_ingrediente', ingrediente_id=ingrediente.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este ingrediente?');">

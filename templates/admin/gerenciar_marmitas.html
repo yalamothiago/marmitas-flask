@@ -21,7 +21,8 @@
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Nome</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Descrição</th>
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Rendimento Receita</th>
-                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário Prod.</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Unidade Prod.</th>
+                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Custo Unitário Prod.</th> {# Rótulo ajustado #}
                     <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Ações</th>
                 </tr>
             </thead>
@@ -31,8 +32,23 @@
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ marmita.id }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ marmita.nome }}</td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ marmita.descricao }}</td>
-                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(marmita.rendimento_receita) if marmita.rendimento_receita is not none else 'N/A' }} porções</td>
-                    <td class="py-3 px-4 border-b border-gray-200 text-sm">R$ {{ "%.2f"|format(marmita.custo_unitario_producao) if marmita.custo_unitario_producao is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ "%.2f"|format(marmita.rendimento_receita) if marmita.rendimento_receita is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">{{ marmita.unidade_medida_producao if marmita.unidade_medida_producao is not none else 'N/A' }}</td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-sm">
+                        {% if marmita.custo_unitario_producao is not none %}
+                            {% set display_cost = marmita.custo_unitario_producao %}
+                            {% set display_unit = marmita.unidade_medida_producao %}
+
+                            {# Se a unidade de produção for gramas, converte o custo para R$/kg para exibição #}
+                            {% if marmita.unidade_medida_producao == 'g' %}
+                                {% set display_cost = converter_unidade(marmita.custo_unitario_producao, 'g', 'kg') %}
+                                {% set display_unit = 'kg' %}
+                            {% endif %}
+                            R$ {{ "%.2f"|format(display_cost) }}/{{ display_unit }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-sm flex space-x-2">
                         <a href="{{ url_for('admin.associar_condimento_a_marmita', marmita_id=marmita.id) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Condimentos</a>
                         <a href="{{ url_for('admin.editar_marmita', marmita_id=marmita.id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg text-xs transition duration-200">Editar</a>
